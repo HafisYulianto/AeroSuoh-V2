@@ -115,12 +115,14 @@ export default function PhotoSlider() {
           <div className="hidden md:flex gap-2">
             <button 
               onClick={() => scroll("left")}
+              aria-label={lang === "ID" ? "Geser galeri ke kiri" : "Slide gallery left"}
               className="p-3 rounded-full border border-emerald-800 bg-emerald-950 text-emerald-100 hover:text-white hover:bg-emerald-700 transition-all shadow-lg hover:shadow-emerald-900/50 active:scale-95"
             >
               <ChevronLeft size={20} />
             </button>
             <button 
               onClick={() => scroll("right")}
+              aria-label={lang === "ID" ? "Geser galeri ke kanan" : "Slide gallery right"}
               className="p-3 rounded-full border border-emerald-800 bg-emerald-950 text-emerald-100 hover:text-white hover:bg-emerald-700 transition-all shadow-lg hover:shadow-emerald-900/50 active:scale-95"
             >
               <ChevronRight size={20} />

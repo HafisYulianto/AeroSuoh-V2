@@ -29,8 +29,8 @@ Pastikan Anda telah menginstal [Node.js](https://nodejs.org/) (Versi 18+ direkom
 
 1. **Clone Repositori ini**
    ```bash
-   git clone https://github.com/HafisYulianto/AeroSuoh.git
-   cd aerosuoh-web
+   git clone https://github.com/HafisYulianto/AeroSuoh-V2.git
+   cd AeroSuoh-V2
    ```
 
 2. **Instal Dependensi**
@@ -65,4 +65,3 @@ AeroSuoh dibangun dengan tujuan **SDG 8 & 11** (Ekonomi & Komunitas Berkelanjuta
 ---
 
 **Developed by [Hafis Yulianto](https://github.com/HafisYulianto)**  
-*Universitas Teknokrat Indonesia*

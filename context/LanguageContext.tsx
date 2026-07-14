@@ -205,6 +205,28 @@ const translations = {
     qris_title: "Selesaikan Pembayaran",
     qris_instruction: "Pindai kode QRIS di bawah ini menggunakan aplikasi M-Banking atau e-Wallet Anda.",
 
+    // Route Access
+    route_vehicle_tip: "Tips Kendaraan:",
+
+    // Itinerary
+    itinerary_day2_label: "Hari 2",
+
+    // Error Pages
+    error_title: "Terjadi Kesalahan",
+    error_desc: "Sistem mendeteksi gangguan teknis. Ini bisa disebabkan oleh koneksi internet atau masalah sementara. Silakan coba lagi.",
+    error_detail_label: "Detail Error",
+    error_retry: "Coba Lagi",
+    error_home: "Kembali ke Beranda",
+    error_critical_title: "Kesalahan Sistem Kritis",
+    error_critical_desc: "Terjadi kesalahan yang tidak terduga pada sistem AeroSuoh. Silakan muat ulang halaman.",
+    error_reload: "Muat Ulang",
+
+    // 404 Page
+    notfound_title: "Tersesat di Hutan Suoh?",
+    notfound_desc: "Halaman yang Anda cari tidak dapat ditemukan. Mungkin jalurnya sudah tertutup semak belukar, atau Anda salah kordinat.",
+    notfound_home: "Kembali ke Basecamp",
+    notfound_back: "Kembali Mundur",
+
     // Footer
     foot_nav_title: "Navigasi Sistem",
     foot_nav_safety: "Panduan Keselamatan",
@@ -405,6 +427,28 @@ const translations = {
     // Phase 2: QRIS
     qris_title: "Complete Payment",
     qris_instruction: "Scan the QRIS code below using your M-Banking or e-Wallet app.",
+
+    // Route Access
+    route_vehicle_tip: "Vehicle Tips:",
+
+    // Itinerary
+    itinerary_day2_label: "Day 2",
+
+    // Error Pages
+    error_title: "Something Went Wrong",
+    error_desc: "A technical issue was detected. This may be caused by your internet connection or a temporary problem. Please try again.",
+    error_detail_label: "Error Detail",
+    error_retry: "Try Again",
+    error_home: "Back to Home",
+    error_critical_title: "Critical System Error",
+    error_critical_desc: "An unexpected error occurred in the AeroSuoh system. Please reload the page.",
+    error_reload: "Reload",
+
+    // 404 Page
+    notfound_title: "Lost in the Suoh Jungle?",
+    notfound_desc: "The page you are looking for cannot be found. Perhaps the trail is overgrown, or you have the wrong coordinates.",
+    notfound_home: "Back to Basecamp",
+    notfound_back: "Go Back",
 
     // Footer
     foot_nav_title: "System Navigation",

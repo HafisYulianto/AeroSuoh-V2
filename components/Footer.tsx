@@ -95,41 +95,6 @@ export default function Footer() {
 
         </div>
 
-        {/* Garis Bawah, Copyright, & Developer Credit */}
-        <div className="mt-12 pt-6 border-t border-emerald-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-emerald-100/60 text-center md:text-left">
-            {t("foot_copy")}
-          </p>
-          
-          {/* === BARU: Developer Credit & Portfolio Links === */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-emerald-100/60">
-              Developed by <span className="font-bold text-emerald-400">Hafis Yulianto</span>
-            </span>
-            <div className="h-4 w-px bg-emerald-800/80 hidden sm:block"></div>
-            <div className="flex items-center gap-2">
-              <a 
-                href="https://www.linkedin.com/in/hafisyulianto/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="p-1.5 rounded-md text-emerald-500/70 hover:text-emerald-300 hover:bg-emerald-900/50 transition-colors"
-                title="Connect on LinkedIn"
-              >
-                <Linkedin size={16} />
-              </a>
-              <a 
-                href="https://github.com/HafisYulianto" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="p-1.5 rounded-md text-emerald-500/70 hover:text-emerald-300 hover:bg-emerald-900/50 transition-colors"
-                title="View GitHub Profile"
-              >
-                <Github size={16} />
-              </a>
-            </div>
-          </div>
-
-        </div>
       </div>
     </footer>
   );

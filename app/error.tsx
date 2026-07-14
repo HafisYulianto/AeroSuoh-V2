@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useLanguage();
+
   useEffect(() => {
     console.error("AeroSuoh Error:", error);
   }, [error]);
@@ -24,18 +27,17 @@ export default function Error({
 
         {/* Title */}
         <h2 className="text-2xl font-extrabold text-slate-900 mb-3 tracking-tight">
-          Terjadi Kesalahan
+          {t("error_title" as any)}
         </h2>
         <p className="text-slate-500 mb-8 leading-relaxed">
-          Sistem mendeteksi gangguan teknis. Ini bisa disebabkan oleh koneksi
-          internet atau masalah sementara. Silakan coba lagi.
+          {t("error_desc" as any)}
         </p>
 
         {/* Error detail (dev only) */}
         {error.message && (
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-8 text-left">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-              Detail Error
+              {t("error_detail_label" as any)}
             </p>
             <p className="text-xs text-slate-600 font-mono break-all">
               {error.message}
@@ -49,13 +51,13 @@ export default function Error({
             onClick={reset}
             className="flex items-center justify-center gap-2 px-6 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 hover:shadow-emerald-600/30"
           >
-            <RefreshCw size={18} /> Coba Lagi
+            <RefreshCw size={18} /> {t("error_retry" as any)}
           </button>
           <a
             href="/"
             className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-all"
           >
-            <Home size={18} /> Kembali ke Beranda
+            <Home size={18} /> {t("error_home" as any)}
           </a>
         </div>
       </div>

@@ -11,6 +11,9 @@ export default function Navbar() {
   // === STATE BARU: Mengontrol menu HP terbuka atau tertutup ===
   const [isOpen, setIsOpen] = useState(false);
 
+  // === SCROLLSPY: Mendeteksi bagian mana yang sedang terlihat ===
+  const [activeSection, setActiveSection] = useState("home");
+
   // === STATE & LOGIKA AUDIO ===
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -31,6 +34,27 @@ export default function Navbar() {
     if (audioRef.current) {
       audioRef.current.volume = 0.4;
     }
+  }, []);
+
+  // === SCROLLSPY LOGIC ===
+  useEffect(() => {
+    const sectionIds = ["home", "about", "gallery", "explorer", "dashboard"];
+
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 120;
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sectionIds[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -59,19 +83,19 @@ export default function Navbar() {
           {/* Menu Navigasi & Tombol Bahasa (DESKTOP) */}
           <div className="hidden lg:flex items-center gap-6 md:gap-8">
             <div className="flex space-x-8">
-              <a href="#home" className="flex items-center gap-2 text-emerald-100 hover:text-white hover:scale-105 transition-all font-medium">
+              <a href="#home" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Home size={20} /> <span>{t("nav_home")}</span>
               </a>
-              <a href="#about" className="flex items-center gap-2 text-emerald-100 hover:text-white hover:scale-105 transition-all font-medium">
+              <a href="#about" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Info size={20} /> <span>{t("nav_about")}</span>
               </a>
-              <a href="#gallery" className="flex items-center gap-2 text-emerald-100 hover:text-white hover:scale-105 transition-all font-medium">
+              <a href="#gallery" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Camera size={20} /> <span>{t("nav_gallery")}</span>
               </a>
-              <a href="#explorer" className="flex items-center gap-2 text-emerald-100 hover:text-white hover:scale-105 transition-all font-medium">
+              <a href="#explorer" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Map size={20} /> <span>{t("nav_map")}</span>
               </a>
-              <a href="#dashboard" className="flex items-center gap-2 text-emerald-100 hover:text-white hover:scale-105 transition-all font-medium">
+              <a href="#dashboard" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Activity size={20} /> <span>{t("nav_dash")}</span>
               </a>
             </div>

@@ -65,9 +65,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <LanguageProvider>
+          <a 
+            href="#main-content" 
+            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[999] focus:bg-emerald-600 focus:text-white focus:px-6 focus:py-3 focus:rounded-xl focus:font-bold focus:shadow-2xl focus:outline-none"
+          >
+            Lompat ke Konten Utama / Skip to Content
+          </a>
           <SafetyAlert />
           <Navbar />
-          {children}
+          <div id="main-content">
+            {children}
+          </div>
           <BackToTop />
         </LanguageProvider>
       </body>

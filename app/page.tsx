@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Navbar from "../components/Navbar";
 import About from "../components/About";
 import LogoPhilosophy from "../components/LogoPhilosophy";
 import Dashboard from "../components/Dashboard";
@@ -27,10 +26,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 relative overflow-x-hidden print:bg-white">
-      
-      <div className="print:hidden">
-        <Navbar />
-      </div>
       
       {/* Hero Section */}
       <div 

@@ -196,7 +196,7 @@ export default function ItineraryPlanner() {
                     </div>
                     <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 shadow-sm ml-4">
                       <div className="flex items-center gap-2 text-emerald-700 font-bold mb-2">
-                        <span>Day 2</span>
+                        <span>{t("itinerary_day2_label" as any)}</span>
                       </div>
                       <h4 className="text-xl font-bold text-emerald-900 mb-2">{t("itinerary_timeline_day2" as any)}</h4>
                     </div>

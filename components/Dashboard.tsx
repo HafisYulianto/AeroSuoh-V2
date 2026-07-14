@@ -267,7 +267,11 @@ export default function Dashboard() {
               </div>
               <div>
                 <p className="text-emerald-100 text-sm font-medium print:text-[10px] print:text-slate-500">{t("dash_weather_title")}</p>
-                <h4 className="text-2xl font-bold tracking-tight print:text-sm">{getWeatherText()}</h4>
+                {weatherCode === null ? (
+                  <div className="h-6 bg-white/20 rounded-full w-28 animate-pulse mt-1"></div>
+                ) : (
+                  <h4 className="text-2xl font-bold tracking-tight print:text-sm">{getWeatherText()}</h4>
+                )}
               </div>
             </div>
             <div className="text-right hidden sm:block">
@@ -275,8 +279,17 @@ export default function Dashboard() {
               <p className="text-sm font-semibold font-mono mb-1 print:text-[10px]">Suoh (-5.25°, 104.27°)</p>
               
               <div className="flex flex-col items-end">
-                <p className="text-xs text-emerald-200 font-medium print:text-[9px] print:text-slate-500">{panelDate}</p>
-                <p className="text-sm font-bold text-white tracking-wide print:text-[10px] print:text-slate-800">{panelTime}</p>
+                {currentTime === null ? (
+                  <div className="space-y-1.5 flex flex-col items-end mt-1 animate-pulse">
+                    <div className="h-3 bg-white/20 rounded-full w-24"></div>
+                    <div className="h-4 bg-white/20 rounded-full w-16"></div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-emerald-200 font-medium print:text-[9px] print:text-slate-500">{panelDate}</p>
+                    <p className="text-sm font-bold text-white tracking-wide print:text-[10px] print:text-slate-800">{panelTime}</p>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -91,7 +91,7 @@ export default function RouteAccess() {
             <Car size={24} />
           </div>
           <p className="text-sm md:text-base font-medium">
-            <span className="text-emerald-300 font-bold block sm:inline mb-1 sm:mb-0 mr-2">Tips Kendaraan:</span>
+            <span className="text-emerald-300 font-bold block sm:inline mb-1 sm:mb-0 mr-2">{t("route_vehicle_tip" as any)}</span>
             {t("route_note" as any)}
           </p>
         </motion.div>
