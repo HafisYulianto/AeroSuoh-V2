@@ -7,8 +7,14 @@ import { useLanguage } from "../context/LanguageContext";
 
 export default function SmartAssistant() {
   const { lang, t } = useLanguage();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<"chat" | "booking" | null>(null);
+
+  // === EVENT LISTENER UNTUK BOOKING DARI NAVBAR ===
+  useEffect(() => {
+    const handleOpenBooking = () => setActiveModal("booking");
+    window.addEventListener('open-booking-modal', handleOpenBooking);
+    return () => window.removeEventListener('open-booking-modal', handleOpenBooking);
+  }, []);
 
   // === STATE UNTUK FORM BOOKING ===
   const [bookingStep, setBookingStep] = useState(1);
@@ -524,27 +530,12 @@ export default function SmartAssistant() {
       {/* === FLOATING ACTION BUTTON (FAB) KANAN BAWAH === */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 print:hidden">
         
-        {/* Dropdown Menu (Hanya 2 Menu Sekarang) */}
-        {isMenuOpen && (
-          <div className="flex flex-col gap-3 mb-2 animate-in fade-in slide-in-from-bottom-4 items-end">
-            <button onClick={() => {setActiveModal("booking"); setIsMenuOpen(false);}} className="flex items-center gap-4 bg-white px-5 py-3.5 rounded-2xl shadow-xl border border-emerald-100 hover:scale-105 transition-transform group">
-              <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">{lang === "ID" ? "Pesan Tiket & Homestay" : "Book Ticket & Homestay"}</span>
-              <div className="bg-amber-100 p-2.5 rounded-full text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-colors"><Ticket size={20} /></div>
-            </button>
-
-            <button onClick={() => {setActiveModal("chat"); setIsMenuOpen(false);}} className="flex items-center gap-4 bg-white px-5 py-3.5 rounded-2xl shadow-xl border border-emerald-100 hover:scale-105 transition-transform group">
-              <span className="text-sm font-bold text-slate-700 group-hover:text-emerald-700">{lang === "ID" ? "Tanya AeroBot" : "Ask AeroBot"}</span>
-              <div className="bg-emerald-100 p-2.5 rounded-full text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><Bot size={20} /></div>
-            </button>
-          </div>
-        )}
-
         {/* Tombol Utama Melayang */}
         <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center text-white ${isMenuOpen ? "bg-slate-800 rotate-90 scale-90" : "bg-gradient-to-r from-emerald-500 to-emerald-700 hover:scale-110 hover:shadow-emerald-500/50 animate-pulse"}`}
+          onClick={() => setActiveModal("chat")}
+          className="p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:scale-110 hover:shadow-emerald-500/50 animate-pulse"
         >
-          {isMenuOpen ? <X size={28} /> : <MessageCircle size={28} />}
+          <MessageCircle size={28} />
         </button>
       </div>
     </>

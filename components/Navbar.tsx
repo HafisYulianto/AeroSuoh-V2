@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { Map, Activity, Home, Camera, Globe, Info, Menu, X, Volume2, VolumeX } from "lucide-react";
+import { Map, Activity, Home, Camera, Globe, Info, Menu, X, Volume2, VolumeX, Ticket } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Navbar() {
@@ -73,9 +73,9 @@ export default function Navbar() {
             <Image 
               src="/logo-aerosuoh2.png" 
               alt="Logo AeroSuoh" 
-              width={132}
-              height={132}
-              className="h-[8.25rem] w-auto object-contain cursor-pointer"
+              width={140}
+              height={140}
+              className="h-[8.75rem] w-auto object-contain cursor-pointer"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             />
           </div>
@@ -83,27 +83,37 @@ export default function Navbar() {
           {/* Menu Navigasi & Tombol Bahasa (DESKTOP) */}
           <div className="hidden lg:flex items-center gap-6 md:gap-8">
             <div className="flex space-x-8">
-              <a href="#home" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#home" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Home size={20} /> <span>{t("nav_home")}</span>
               </a>
-              <a href="#about" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#about" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Info size={20} /> <span>{t("nav_about")}</span>
               </a>
-              <a href="#gallery" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#gallery" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Camera size={20} /> <span>{t("nav_gallery")}</span>
               </a>
-              <a href="#explorer" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#explorer" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Map size={20} /> <span>{t("nav_map")}</span>
               </a>
-              <a href="#dashboard" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#dashboard" className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Activity size={20} /> <span>{t("nav_dash")}</span>
               </a>
             </div>
 
-            <div className="h-8 w-px bg-emerald-800"></div>
+            <div className="h-8 w-px bg-emerald-800 mx-1"></div>
 
-            {/* === GRUP TOMBOL PENGATURAN KANAN (DESKTOP) === */}
-            <div className="flex items-center gap-3">
+            {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP) === */}
+            <div className="flex items-center gap-4">
+              
+              {/* Tombol Pesan Tiket (Dipindah ke Kanan agar proporsional) */}
+              <button 
+                onClick={() => window.dispatchEvent(new Event('open-booking-modal'))}
+                className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transform hover:scale-105 active:scale-95 whitespace-nowrap"
+              >
+                <Ticket size={18} /> <span>{lang === "ID" ? "Pesan Tiket" : "Book Ticket"}</span>
+              </button>
+
+              <div className="flex items-center gap-3">
               
               {/* === REVISI: TOGGLE SWITCH AUDIO VERTIKAL (Teks di bawah, tinggi sama dengan ID) === */}
               <div className="flex flex-col items-center justify-center bg-emerald-900/80 border border-emerald-700/50 px-3 py-2 rounded-2xl shadow-sm h-10 w-[70px]">
@@ -134,6 +144,7 @@ export default function Navbar() {
                 <Globe size={18} className={lang === "EN" ? "text-amber-400" : "text-emerald-400"} />
                 {lang}
               </button>
+            </div>
             </div>
 
           </div>
@@ -199,6 +210,17 @@ export default function Navbar() {
             <a href="#dashboard" onClick={() => setIsOpen(false)} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Activity size={20} /> <span>{t("nav_dash")}</span>
             </a>
+
+            {/* Tombol Pesan Tiket Mobile */}
+            <button 
+              onClick={() => {
+                setIsOpen(false);
+                window.dispatchEvent(new Event('open-booking-modal'));
+              }}
+              className="flex items-center justify-center gap-3 p-3 mt-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-md"
+            >
+              <Ticket size={20} /> <span>{lang === "ID" ? "Pesan Tiket & Homestay" : "Book Ticket & Homestay"}</span>
+            </button>
           </div>
         </div>
       )}
