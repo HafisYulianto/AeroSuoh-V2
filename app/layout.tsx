@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "AeroSuoh | Geothermal Eco-Monitor",
   description: "Platform pariwisata pintar dan dasbor pemantauan geotermal masa depan untuk kawasan Suoh, Lampung Barat.",
   keywords: ["AeroSuoh", "Suoh", "Lampung Barat", "Geothermal", "Ecotourism", "Danau Asam", "Teknokrat"],
-  authors: [{ name: "Hafis Yulianto" }],
+  authors: [{ name: "Hafis Yulianto & Resiana Pahleppi" }],
   icons: {
     icon: "/logo-aerosuoh2.png", 
   },

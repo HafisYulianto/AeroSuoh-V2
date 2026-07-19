@@ -96,8 +96,8 @@ export default function SmartAssistant() {
         else if (inputLower.includes("anak") || inputLower.includes("keluarga") || inputLower.includes("bayi") || inputLower.includes("balita") || inputLower.includes("orang tua")) {
           botReply = "Untuk area Danau (Asam, Lebar) sangat aman untuk anak & lansia. Namun untuk turun langsung ke Kawah Keramikan/Nirwana, anak-anak dan lansia disarankan hanya memantau dari zona pandang yang disediakan demi keamanan. 👨‍👩‍👧‍👦";
         }
-        else if (inputLower.includes("pembuat") || inputLower.includes("developer") || inputLower.includes("hafis") || inputLower.includes("siapa yang buat") || inputLower.includes("teknokrat")) {
-          botReply = "Platform canggih AeroSuoh ini dikembangkan oleh Hafis Yulianto, mahasiswa Universitas Teknokrat Indonesia, sebagai dedikasi untuk memajukan pariwisata Lampung Barat! 💻🚀";
+        else if (inputLower.includes("pembuat") || inputLower.includes("developer") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("siapa yang buat") || inputLower.includes("teknokrat")) {
+          botReply = "Platform canggih AeroSuoh ini dikembangkan oleh Hafis Yulianto & Resiana Pahleppi, mahasiswa Universitas Teknokrat Indonesia, sebagai dedikasi untuk memajukan pariwisata Lampung Barat! 💻🚀";
         } 
         else if (inputLower.includes("vtol") || inputLower.includes("pesawat") || inputLower.includes("kamera udara")) {
           botReply = "AeroSuoh mensimulasikan pemantauan udara menggunakan drone VTOL-X1 untuk memetakan kawasan geotermal dengan aman. Anda bisa melacaknya di menu Aerial Explorer! 🚁";
@@ -162,8 +162,8 @@ export default function SmartAssistant() {
         else if (inputLower.includes("kid") || inputLower.includes("family") || inputLower.includes("baby") || inputLower.includes("child") || inputLower.includes("parent") || inputLower.includes("old")) {
           botReply = "The Lake areas are very safe for kids and seniors. However, for active craters (Keramikan/Nirvana), kids and seniors are advised to view only from the designated safe observation zones. 👨‍👩‍👧‍👦";
         }
-        else if (inputLower.includes("developer") || inputLower.includes("creator") || inputLower.includes("hafis") || inputLower.includes("who made") || inputLower.includes("teknokrat")) {
-          botReply = "This advanced AeroSuoh platform was developed by Hafis Yulianto, a student at Universitas Teknokrat Indonesia, dedicated to advancing West Lampung's tourism! 💻🚀";
+        else if (inputLower.includes("developer") || inputLower.includes("creator") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("who made") || inputLower.includes("teknokrat")) {
+          botReply = "This advanced AeroSuoh platform was developed by Hafis Yulianto & Resiana Pahleppi, students at Universitas Teknokrat Indonesia, dedicated to advancing West Lampung's tourism! 💻🚀";
         } 
         else if (inputLower.includes("vtol") || inputLower.includes("plane") || inputLower.includes("camera")) {
           botReply = "AeroSuoh simulates aerial monitoring using a VTOL-X1 drone to map the geothermal area safely. You can track it in our Aerial Explorer menu! 🚁";
