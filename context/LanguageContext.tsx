@@ -1,13 +1,16 @@
 "use client";
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode, useEffect, useCallback } from "react";
+import { supabase } from "../lib/supabase";
 
 type Language = "ID" | "EN";
 
 interface LanguageContextType {
   lang: Language;
   toggleLang: () => void;
-  t: (key: keyof typeof translations.ID) => string;
+  t: (key: string) => string;
+  getSetting: (key: string, fallback: string) => string;
+  refreshSettings: () => Promise<void>;
 }
 
 // === BRANKAS KAMUS TERJEMAHAN (UPDATE SEJARAH LENGKAP & MITOS LOKAL) ===
@@ -464,17 +467,47 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLang] = useState<Language>("ID");
+  const [settings, setSettings] = useState<Record<string, string>>({});
+
+  const refreshSettings = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from("site_settings").select("key, value");
+      if (error) throw error;
+      if (data) {
+        const settingsMap: Record<string, string> = {};
+        data.forEach((item) => {
+          settingsMap[item.key] = item.value;
+        });
+        setSettings(settingsMap);
+      }
+    } catch (err) {
+      console.error("Gagal memuat site_settings:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshSettings();
+  }, [refreshSettings]);
 
   const toggleLang = () => {
     setLang((prev) => (prev === "ID" ? "EN" : "ID"));
   };
 
-  const t = (key: keyof typeof translations.ID) => {
-    return translations[lang][key] || key;
+  const getSetting = (key: string, fallback: string) => {
+    return settings[key] || fallback;
+  };
+
+  const t = (key: string) => {
+    const dbKey = `${key}_${lang.toLowerCase()}`;
+    if (settings[dbKey]) return settings[dbKey];
+    if (settings[key]) return settings[key];
+    
+    const dict = translations[lang] as Record<string, string>;
+    return dict[key] || key;
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, toggleLang, t }}>
+    <LanguageContext.Provider value={{ lang, toggleLang, t, getSetting, refreshSettings }}>
       {children}
     </LanguageContext.Provider>
   );

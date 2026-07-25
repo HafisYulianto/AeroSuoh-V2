@@ -6,7 +6,7 @@ import { Map, Activity, Home, Camera, Globe, Info, Menu, X, Volume2, VolumeX, Ti
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Navbar() {
-  const { lang, toggleLang, t } = useLanguage();
+  const { lang, toggleLang, t, getSetting } = useLanguage();
   
   // === STATE BARU: Mengontrol menu HP terbuka atau tertutup ===
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +71,7 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex items-center">
             <Image 
-              src="/logo-aerosuoh2.png" 
+              src={getSetting("navbar_logo_url", "/logo-aerosuoh2.png")} 
               alt="Logo AeroSuoh" 
               width={140}
               height={140}

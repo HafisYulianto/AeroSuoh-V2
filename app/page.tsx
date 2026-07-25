@@ -22,7 +22,7 @@ import { useLanguage } from "../context/LanguageContext";
 
 export default function Home() {
   // === Panggil kekuatan Global State dan kamus terjemahan (fungsi 't') ===
-  const { t } = useLanguage();
+  const { t, getSetting } = useLanguage();
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 relative overflow-x-hidden print:bg-white">
@@ -34,7 +34,7 @@ export default function Home() {
       >
         {/* Hero Background Image (Optimized by Next.js) — Layer 0 */}
         <Image 
-          src="/hero-suoh2.png" 
+          src={getSetting("hero_image_url", "/hero-suoh2.png")} 
           alt="Kawasan Geotermal Suoh" 
           fill 
           priority 
