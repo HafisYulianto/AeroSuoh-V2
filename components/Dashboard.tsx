@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { Thermometer, Wind, AlertTriangle, Activity, Droplets, Printer, CloudSun } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useLanguage } from "../context/LanguageContext";
+import { supabase } from "../lib/supabase";
 
-const chartData = [
+const chartDataFallback = [
   { time: '00:00', h2s: 15, gempa: 2 },
   { time: '04:00', h2s: 18, gempa: 1 },
   { time: '08:00', h2s: 25, gempa: 4 },
@@ -23,6 +24,61 @@ export default function Dashboard() {
   const [weatherCode, setWeatherCode] = useState<number | null>(null);
   
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
+
+  // Dynamic states from Supabase
+  const [h2sVal, setH2sVal] = useState<number>(45);
+  const [phVal, setPhVal] = useState<number>(2.1);
+  const [h2sStatus, setH2sStatus] = useState<string>("Waspada: Kawah Nirwana");
+  const [phStatus, setPhStatus] = useState<string>("Danau Asam (Tinggi)");
+  const [dbChartData, setDbChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSensors = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("sensor_readings")
+          .select("*")
+          .order("recorded_at", { ascending: false })
+          .limit(1);
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const latest = data[0];
+          setH2sVal(latest.h2s_ppm);
+          setPhVal(latest.ph_level);
+          setH2sStatus(lang === "ID" ? latest.h2s_status_id : latest.h2s_status_en);
+          setPhStatus(lang === "ID" ? latest.ph_status_id : latest.ph_status_en);
+        }
+      } catch (err) {
+        console.error("Gagal memuat sensor_readings:", err);
+      }
+    };
+
+    const fetchChartData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("sensor_chart_data")
+          .select("*")
+          .order("recorded_at", { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const mapped = data.map(item => ({
+            time: item.time_label,
+            h2s: item.h2s_value,
+            gempa: item.gempa_value
+          }));
+          setDbChartData(mapped);
+        } else {
+          setDbChartData(chartDataFallback);
+        }
+      } catch (err) {
+        console.error("Gagal memuat chart data:", err);
+        setDbChartData(chartDataFallback);
+      }
+    };
+
+    fetchSensors();
+    fetchChartData();
+  }, [lang]);
 
   useEffect(() => {
     const fetchRealData = async () => {
@@ -192,10 +248,10 @@ export default function Dashboard() {
             <div>
               <p className="text-sm font-medium text-slate-500 print:text-[10px]">{t("dash_h2s_title")}</p>
               <div className="flex items-end gap-2">
-                <h3 className="text-3xl font-bold text-slate-800 print:text-xl">45</h3>
+                <h3 className="text-3xl font-bold text-slate-800 print:text-xl">{h2sVal}</h3>
                 <span className="text-sm font-bold text-slate-400 mb-1.5 print:text-[10px]">ppm</span>
               </div>
-              <p className="text-xs text-amber-600 mt-1 font-bold print:text-[9px] print:mt-0">{t("dash_h2s_desc")}</p>
+              <p className="text-xs text-amber-600 mt-1 font-bold print:text-[9px] print:mt-0">{h2sStatus}</p>
             </div>
           </div>
 
@@ -206,10 +262,10 @@ export default function Dashboard() {
             <div>
               <p className="text-sm font-medium text-slate-500 print:text-[10px]">{t("dash_ph_title")}</p>
               <div className="flex items-end gap-2">
-                <h3 className="text-3xl font-bold text-slate-800 print:text-xl">2.1</h3>
+                <h3 className="text-3xl font-bold text-slate-800 print:text-xl">{phVal}</h3>
                 <span className="text-sm font-bold text-slate-400 mb-1.5 print:text-[10px]">pH</span>
               </div>
-              <p className="text-xs text-emerald-600 mt-1 font-bold print:text-[9px] print:mt-0">{t("dash_ph_desc")}</p>
+              <p className="text-xs text-emerald-600 mt-1 font-bold print:text-[9px] print:mt-0">{phStatus}</p>
             </div>
           </div>
             </>
@@ -230,7 +286,7 @@ export default function Dashboard() {
             {/* === REVISI: Mengurangi tinggi grafik saat dicetak (print:h-48) === */}
             <div className="grow w-full h-64 min-h-[250px] print:h-48 print:min-h-[150px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={dbChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorH2S" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
