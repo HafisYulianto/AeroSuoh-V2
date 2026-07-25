@@ -5,10 +5,11 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, Camera, MapPin, X, BookOpen, ScrollText, Sparkles, Info as InfoIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
+import { supabase } from "../lib/supabase";
 
 const photosData = [
   { 
-    id: 1, 
+    id: "1", 
     src: "/images/danau-asam-hd.png", 
     titleKey: "loc1_title", 
     typeKey: "loc1_type",
@@ -18,7 +19,7 @@ const photosData = [
     lng: 104.27882688457521, lat: -5.238698319624318 
   },
   { 
-    id: 2, 
+    id: "2", 
     src: "/images/danau-lebar-hd.png", 
     titleKey: "loc2_title", 
     typeKey: "loc2_type",
@@ -28,7 +29,7 @@ const photosData = [
     lng: 104.274690, lat: -5.251999 
   },
   { 
-    id: 3, 
+    id: "3", 
     src: "/images/danau-minyak-hd.png", 
     titleKey: "loc3_title", 
     typeKey: "loc3_type",
@@ -38,7 +39,7 @@ const photosData = [
     lng: 104.266782, lat: -5.246098 
   },
   { 
-    id: 4, 
+    id: "4", 
     src: "/images/pasir-kuning-hd.png", 
     titleKey: "loc4_title", 
     typeKey: "loc4_type",
@@ -48,7 +49,7 @@ const photosData = [
     lng: 104.26727197333017, lat: -5.236056616428336 
   },
   { 
-    id: 5, 
+    id: "5", 
     src: "/images/kawah-nirwana-hd.png", 
     titleKey: "loc5_title", 
     typeKey: "loc5_type",
@@ -58,7 +59,7 @@ const photosData = [
     lng: 104.25928872886739, lat: -5.237142698064301 
   },
   { 
-    id: 6, 
+    id: "6", 
     src: "/images/kawah-keramikan-hd.png", 
     titleKey: "loc6_title", 
     typeKey: "loc6_type",
@@ -73,7 +74,57 @@ export default function PhotoSlider() {
   const { t, lang } = useLanguage();
   
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [selectedPhoto, setSelectedPhoto] = useState<typeof photosData[0] | null>(null);
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [selectedPhoto, setSelectedPhoto] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("gallery_items")
+          .select("*")
+          .order("sort_order", { ascending: true });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const mapped = data.map(item => ({
+            id: item.id,
+            src: item.image_url,
+            title: lang === "ID" ? item.title_id : item.title_en,
+            type: lang === "ID" ? item.type_id : item.type_en,
+            desc: lang === "ID" ? item.desc_id : item.desc_en,
+            history: lang === "ID" ? item.history_id : item.history_en,
+            mitos: lang === "ID" ? item.mitos_id : item.mitos_en,
+            lat: item.lat,
+            lng: item.lng
+          }));
+          setPhotos(mapped);
+        } else {
+          // Static fallback mapping
+          const mappedFallback = photosData.map(item => ({
+            ...item,
+            title: t(item.titleKey as any),
+            type: t(item.typeKey as any),
+            desc: t(item.descKey as any),
+            history: t(item.historyKey as any),
+            mitos: t(item.mitosKey as any),
+          }));
+          setPhotos(mappedFallback);
+        }
+      } catch (err) {
+        console.error("Gagal memuat galeri:", err);
+        const mappedFallback = photosData.map(item => ({
+          ...item,
+          title: t(item.titleKey as any),
+          type: t(item.typeKey as any),
+          desc: t(item.descKey as any),
+          history: t(item.historyKey as any),
+          mitos: t(item.mitosKey as any),
+        }));
+        setPhotos(mappedFallback);
+      }
+    };
+    fetchGallery();
+  }, [lang, t]);
   
   // === STATE BARU: Mengontrol Tab Aktif (info | sejarah | mitos) ===
   const [activeTab, setActiveTab] = useState<"info" | "sejarah" | "mitos">("info");
@@ -137,7 +188,7 @@ export default function PhotoSlider() {
             className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-12 pt-4 [&::-webkit-scrollbar]:hidden"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            {photosData.map((photo) => (
+            {photos.map((photo) => (
               <div 
                 key={photo.id} 
                 onClick={() => setSelectedPhoto(photo)}
@@ -145,8 +196,8 @@ export default function PhotoSlider() {
               >
                 <div className="aspect-[4/3] w-full bg-slate-800 overflow-hidden relative">
                   <Image 
-                    src={photo.src} 
-                    alt={t(photo.titleKey as any)} 
+                    src={photo.src || "/hero-suoh2.png"} 
+                    alt={photo.title || ""} 
                     fill
                     sizes="(max-width: 640px) 85vw, 400px"
                     className="object-cover transition-transform duration-700 ease-out group-hover/card:scale-110" 
@@ -159,14 +210,14 @@ export default function PhotoSlider() {
                   <div className="transform translate-y-6 group-hover/card:translate-y-0 transition-transform duration-500 ease-out">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold bg-emerald-500/80 backdrop-blur-md text-white rounded-full shadow-sm">
-                        {t(photo.typeKey as any)}
+                        {photo.type || ""}
                       </span>
                     </div>
                     <h3 className="text-white text-2xl font-bold mb-2 flex items-center gap-2 drop-shadow-lg">
-                      {t(photo.titleKey as any)}
+                      {photo.title || ""}
                     </h3>
                     <p className="text-slate-300 text-sm line-clamp-2 leading-relaxed opacity-80 group-hover/card:opacity-100 transition-opacity duration-500 mb-5">
-                      {t(photo.descKey as any)}
+                      {photo.desc || ""}
                     </p>
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold opacity-0 group-hover/card:opacity-100 transform translate-y-4 group-hover/card:translate-y-0 transition-all duration-500 shadow-lg">
                       <BookOpen size={14} className="text-emerald-400" /> 
@@ -208,8 +259,8 @@ export default function PhotoSlider() {
 
               <div className="w-full md:w-1/2 h-48 md:h-auto min-h-[200px] relative bg-slate-800">
                 <Image 
-                  src={selectedPhoto.src} 
-                  alt={t(selectedPhoto.titleKey as any)} 
+                  src={selectedPhoto.src || "/hero-suoh2.png"} 
+                  alt={selectedPhoto.title || ""} 
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
@@ -223,11 +274,11 @@ export default function PhotoSlider() {
                 <div className="mb-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-3 py-1.5 text-xs uppercase tracking-widest font-bold bg-emerald-600/90 text-white rounded-full shadow-sm">
-                      {t(selectedPhoto.typeKey as any)}
+                      {selectedPhoto.type || ""}
                     </span>
                   </div>
                   <h3 className="text-3xl font-bold text-white mb-4 leading-tight">
-                    {t(selectedPhoto.titleKey as any)}
+                    {selectedPhoto.title || ""}
                   </h3>
                   <a 
                     href={`https://maps.google.com/?q=${selectedPhoto.lat},${selectedPhoto.lng}`} 
@@ -283,7 +334,7 @@ export default function PhotoSlider() {
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
                       >
                         <p className="text-emerald-100/90 text-sm leading-relaxed text-justify font-medium">
-                          {t(selectedPhoto.descKey as any)}
+                          {selectedPhoto.desc || ""}
                         </p>
                       </motion.div>
                     )}
@@ -294,7 +345,7 @@ export default function PhotoSlider() {
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
                       >
                         <p className="text-slate-300 text-sm leading-relaxed text-justify bg-emerald-950/40 p-5 rounded-2xl border border-emerald-900/50 shadow-inner">
-                          {t(selectedPhoto.historyKey as any)}
+                          {selectedPhoto.history || ""}
                         </p>
                       </motion.div>
                     )}
@@ -304,9 +355,8 @@ export default function PhotoSlider() {
                         key="mitos"
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}
                       >
-                        {/* Jika mitosKey belum ada terjemahannya, kita tampilkan fallback */}
                         <p className="text-amber-200/90 text-sm leading-relaxed text-justify bg-amber-950/20 p-5 rounded-2xl border border-amber-900/30 shadow-inner">
-                          {t(selectedPhoto.mitosKey as any) || (lang === "ID" ? "Mitos untuk lokasi ini sedang dihimpun dari tokoh masyarakat setempat." : "Myths for this location are currently being gathered from local elders.")}
+                          {selectedPhoto.mitos || (lang === "ID" ? "Mitos untuk lokasi ini sedang dihimpun dari tokoh masyarakat setempat." : "Myths for this location are currently being gathered from local elders.")}
                         </p>
                       </motion.div>
                     )}
