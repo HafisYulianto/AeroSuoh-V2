@@ -4,6 +4,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Bot, Ticket, Calendar, Users, Home, ArrowRight, CheckCircle2, Send, QrCode } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { supabase } from "../lib/supabase";
 
 export default function SmartAssistant() {
   const { lang, t } = useLanguage();
@@ -18,8 +19,8 @@ export default function SmartAssistant() {
 
   // === STATE UNTUK FORM BOOKING ===
   const [bookingStep, setBookingStep] = useState(1);
-  const [bookingData, setBookingData] = useState({ date: "", guests: 1, type: "", homestay: "" });
-  const [bookingErrors, setBookingErrors] = useState<{date?: string; guests?: string}>({});
+  const [bookingData, setBookingData] = useState({ name: "", phone: "", date: "", guests: 1, type: "", homestay: "" });
+  const [bookingErrors, setBookingErrors] = useState<{name?: string; phone?: string; date?: string; guests?: string}>({});
 
   // === STATE UNTUK AEROBOT (CHATBOT) ===
   const [chatInput, setChatInput] = useState("");
@@ -191,13 +192,34 @@ export default function SmartAssistant() {
   };
 
   // === FUNGSI GENERATOR WHATSAPP LINK (Booking) ===
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     const adminPhone = "6282279485813"; // Ganti dengan nomor WhatsApp admin yang asli
+
+    // Simpan ke Supabase bookings
+    try {
+      const { error } = await supabase
+        .from("bookings")
+        .insert([
+          {
+            name: bookingData.name,
+            phone: bookingData.phone,
+            visit_date: bookingData.date,
+            guests: bookingData.guests,
+            ticket_type: bookingData.type,
+            homestay: bookingData.homestay || null,
+            status: "pending"
+          }
+        ]);
+      if (error) throw error;
+    } catch (err) {
+      console.error("Gagal menyimpan booking:", err);
+    }
+
     let waMessage = "";
     if (lang === "ID") {
-      waMessage = `Halo Admin AeroSuoh, saya ingin konfirmasi pesanan tiket:\n\n*Paket:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Tanggal:* ${bookingData.date || "Belum dipilih"}\n*Jumlah Orang:* ${bookingData.guests} Orang\n\nMohon info selanjutnya untuk pembayaran. Terima kasih.`;
+      waMessage = `Halo Admin AeroSuoh, saya ingin konfirmasi pesanan tiket:\n\n*Nama:* ${bookingData.name}\n*No. HP:* ${bookingData.phone}\n*Paket:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Tanggal:* ${bookingData.date || "Belum dipilih"}\n*Jumlah Orang:* ${bookingData.guests} Orang\n\nMohon info selanjutnya untuk pembayaran. Terima kasih.`;
     } else {
-      waMessage = `Hello AeroSuoh Admin, I would like to confirm my booking:\n\n*Package:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Date:* ${bookingData.date || "Not selected"}\n*Guests:* ${bookingData.guests} Pax\n\nPlease provide further instructions for payment. Thank you.`;
+      waMessage = `Hello AeroSuoh Admin, I would like to confirm my booking:\n\n*Name:* ${bookingData.name}\n*Phone:* ${bookingData.phone}\n*Package:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Date:* ${bookingData.date || "Not selected"}\n*Guests:* ${bookingData.guests} Pax\n\nPlease provide further instructions for payment. Thank you.`;
     }
     const encodedMessage = encodeURIComponent(waMessage);
     const waUrl = `https://wa.me/${adminPhone}?text=${encodedMessage}`;
@@ -205,12 +227,21 @@ export default function SmartAssistant() {
     setActiveModal(null);
     setBookingStep(1);
     setBookingErrors({});
+    setBookingData({ name: "", phone: "", date: "", guests: 1, type: "", homestay: "" });
   };
 
   // === VALIDASI FORM BOOKING STEP 1 ===
   const validateStep1 = (): boolean => {
-    const errors: {date?: string; guests?: string} = {};
+    const errors: {name?: string; phone?: string; date?: string; guests?: string} = {};
     
+    if (!bookingData.name.trim()) {
+      errors.name = lang === "ID" ? "Nama wajib diisi" : "Name is required";
+    }
+
+    if (!bookingData.phone.trim()) {
+      errors.phone = lang === "ID" ? "Nomor telepon/WA wajib diisi" : "Phone/WA is required";
+    }
+
     if (!bookingData.date) {
       errors.date = lang === "ID" ? "Tanggal kunjungan wajib diisi" : "Visit date is required";
     } else {
@@ -261,19 +292,60 @@ export default function SmartAssistant() {
             ))}
           </div>
 
-          {/* STEP 1: Tanggal & Jumlah Tamu */}
+          {/* STEP 1: Identitas & Tanggal & Jumlah Tamu */}
           {bookingStep === 1 && (
-            <div className="space-y-5 animate-in slide-in-from-right-4">
-              <h4 className="font-bold text-slate-800 text-lg">{lang === "ID" ? "Kapan Anda berkunjung?" : "When are you visiting?"}</h4>
+            <div className="space-y-4 animate-in slide-in-from-right-4 max-h-[60vh] overflow-y-auto pr-1">
+              <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Lengkapi Data Diri & Rencana Kunjungan" : "Complete Personal Data & Visit Plan"}</h4>
+              
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5 block">{lang === "ID" ? "Tanggal Kunjungan" : "Visit Date"}</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Nama Lengkap" : "Full Name"}</label>
+                <input 
+                  type="text" 
+                  value={bookingData.name}
+                  placeholder="e.g. Budi Santoso"
+                  className={`w-full px-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
+                    bookingErrors.name 
+                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
+                      : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                  }`} 
+                  onChange={(e) => { setBookingData({...bookingData, name: e.target.value}); setBookingErrors({...bookingErrors, name: undefined}); }} 
+                />
+                {bookingErrors.name && (
+                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
+                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.name}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Nomor WhatsApp" : "WhatsApp Number"}</label>
+                <input 
+                  type="text" 
+                  value={bookingData.phone}
+                  placeholder="e.g. 082279485813"
+                  className={`w-full px-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
+                    bookingErrors.phone 
+                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
+                      : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
+                  }`} 
+                  onChange={(e) => { setBookingData({...bookingData, phone: e.target.value}); setBookingErrors({...bookingErrors, phone: undefined}); }} 
+                />
+                {bookingErrors.phone && (
+                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
+                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.phone}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Tanggal Kunjungan" : "Visit Date"}</label>
                 <div className="relative">
-                  <Calendar size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
+                  <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
                   <input 
                     type="date" 
                     value={bookingData.date}
                     min={new Date().toISOString().split('T')[0]}
-                    className={`w-full pl-11 pr-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 ${
+                    className={`w-full pl-11 pr-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
                       bookingErrors.date 
                         ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
                         : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
@@ -282,21 +354,22 @@ export default function SmartAssistant() {
                   />
                 </div>
                 {bookingErrors.date && (
-                  <p className="text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
                     <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.date}
                   </p>
                 )}
               </div>
+
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5 block">{lang === "ID" ? "Jumlah Pengunjung" : "Number of Guests"}</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Jumlah Pengunjung" : "Number of Guests"}</label>
                 <div className="relative">
-                  <Users size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
+                  <Users size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
                   <input 
                     type="number" 
                     min="1" 
                     max="100"
                     value={bookingData.guests}
-                    className={`w-full pl-11 pr-4 py-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 ${
+                    className={`w-full pl-11 pr-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
                       bookingErrors.guests 
                         ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
                         : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
@@ -305,12 +378,12 @@ export default function SmartAssistant() {
                   />
                 </div>
                 {bookingErrors.guests && (
-                  <p className="text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
                     <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.guests}
                   </p>
                 )}
               </div>
-              <button onClick={() => { if (validateStep1()) setBookingStep(2); }} className="w-full py-3 mt-6 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all hover:shadow-lg flex justify-center items-center gap-2">
+              <button onClick={() => { if (validateStep1()) setBookingStep(2); }} className="w-full py-3 mt-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer">
                 {lang === "ID" ? "Lanjutkan" : "Next"} <ArrowRight size={18} />
               </button>
             </div>
