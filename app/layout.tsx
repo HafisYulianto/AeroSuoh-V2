@@ -51,6 +51,9 @@ export const metadata: Metadata = {
     description: "Platform pariwisata pintar dan dasbor pemantauan geotermal masa depan untuk kawasan Suoh, Lampung Barat.",
     images: ["/hero-suoh2.png"],
   },
+  verification: {
+    google: "google706c6bf540ed95f4",
+  },
 };
 // ======================================================================
 
