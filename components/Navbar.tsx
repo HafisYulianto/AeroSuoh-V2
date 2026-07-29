@@ -2,11 +2,18 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Map, Activity, Home, Camera, Globe, Info, Menu, X, Volume2, VolumeX, Ticket } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { lang, toggleLang, t, getSetting } = useLanguage();
+
+  // Sembunyikan Navbar publik jika sedang di area Admin
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   
   // === STATE BARU: Mengontrol menu HP terbuka atau tertutup ===
   const [isOpen, setIsOpen] = useState(false);

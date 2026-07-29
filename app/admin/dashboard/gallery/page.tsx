@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { Plus, Edit2, Trash2, Save, Upload, X, CheckCircle, Loader2 } from "lucide-react";
+import { Image as ImageIcon, Plus, Edit2, Trash2, Save, X, Upload, MapPin, Loader2 } from "lucide-react";
+import AdminModal, { ModalState } from "../../../../components/admin/AdminModal";
 import Image from "next/image";
 
 export default function GalleryAdmin() {
@@ -12,6 +13,15 @@ export default function GalleryAdmin() {
   const [uploading, setUploading] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Custom Modal State
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
+
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
 
   // Form states
   const [titleId, setTitleId] = useState("");
@@ -153,15 +163,35 @@ export default function GalleryAdmin() {
       loadGallery();
     } catch (err) {
       console.error("Gagal menyimpan galeri:", err);
-      alert("Gagal menyimpan data.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menyimpan Data",
+        description: "Terjadi kesalahan saat menyimpan spot wisata ke database. Silakan periksa kembali formulir Anda.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus spot galeri ini?")) return;
+  const confirmDelete = (id: string, title: string) => {
+    setModal({
+      isOpen: true,
+      type: "danger",
+      title: "Hapus Spot Galeri?",
+      description: `Apakah Anda yakin ingin menghapus spot galeri "${title}"? Tindakan ini akan menghapus data beserta lokasi 3D explorer secara permanen.`,
+      confirmText: "Ya, Hapus Spot",
+      cancelText: "Batal",
+      onCancel: closeModal,
+      onConfirm: () => executeDelete(id),
+    });
+  };
 
+  const executeDelete = async (id: string) => {
+    closeModal();
     try {
       const { error } = await supabase
         .from("gallery_items")
@@ -171,9 +201,18 @@ export default function GalleryAdmin() {
       loadGallery();
     } catch (err) {
       console.error("Gagal menghapus galeri:", err);
-      alert("Gagal menghapus data.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menghapus Spot",
+        description: "Tidak dapat menghapus spot ini dari database. Silakan coba lagi.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
     }
   };
+
 
   if (loading && !showForm) {
     return (
@@ -447,7 +486,7 @@ export default function GalleryAdmin() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => confirmDelete(item.id, item.title_id)}
                   className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:border-rose-300 hover:text-rose-600 text-slate-600 rounded-lg text-xs font-bold tracking-wide transition-all shadow-xs cursor-pointer"
                 >
                   <Trash2 size={12} />
@@ -458,6 +497,10 @@ export default function GalleryAdmin() {
           ))}
         </div>
       )}
+
+      {/* Modern Modal Dialog */}
+      <AdminModal {...modal} />
     </div>
   );
 }
+

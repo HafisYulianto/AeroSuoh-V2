@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { Users, Plus, Trash2, Save, X, CheckCircle, Loader2, Key } from "lucide-react";
+import { Users, UserPlus, Shield, Trash2, Mail, Lock, User, CheckCircle, Loader2, X, Plus, Save, Key } from "lucide-react";
+import AdminModal, { ModalState } from "../../../../components/admin/AdminModal";
 
 export default function UserManagementAdmin() {
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -12,6 +13,15 @@ export default function UserManagementAdmin() {
   const [showForm, setShowForm] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Custom Modal State
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
+
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
 
   // Form states
   const [email, setEmail] = useState("");
@@ -76,38 +86,60 @@ export default function UserManagementAdmin() {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
+  const confirmDeleteUser = async (id: string, name: string) => {
     const checkSelf = await supabase.auth.getUser();
     if (checkSelf.data.user?.id === id) {
-      alert("Anda tidak bisa menghapus akun Anda sendiri!");
+      setModal({
+        isOpen: true,
+        type: "warning",
+        title: "Aksi Tidak Diizinkan",
+        description: "Anda tidak dapat menghapus akun Anda sendiri yang sedang aktif digunakan.",
+        isConfirmOnly: true,
+        confirmText: "Paham",
+        onConfirm: closeModal,
+      });
       return;
     }
 
-    if (!confirm("Apakah Anda yakin ingin menghapus administrator ini? Tindakan ini akan menghapus akses mereka secara permanen.")) return;
-    
+    setModal({
+      isOpen: true,
+      type: "danger",
+      title: "Hapus Akun Admin?",
+      description: `Apakah Anda yakin ingin menghapus administrator "${name}"? Hak akses mereka ke Admin Panel akan dicabut secara permanen.`,
+      confirmText: "Ya, Hapus Akses",
+      cancelText: "Batal",
+      onCancel: closeModal,
+      onConfirm: () => executeDeleteUser(id),
+    });
+  };
+
+  const executeDeleteUser = async (id: string) => {
+    closeModal();
     setDeletingId(id);
     try {
-      // Hapus profil di database
       const { error } = await supabase
         .from("profiles")
         .delete()
         .eq("id", id);
       
       if (error) throw error;
-
-      // Catatan: Jika ingin menghapus user di Auth Supabase juga secara penuh,
-      // biasanya dilakukan di API route admin. Namun menghapus profil saja
-      // sudah cukup untuk mem-blokir akses login mereka karena layout check 
-      // memverifikasi peran user di tabel `profiles`.
-
       loadProfiles();
     } catch (err) {
       console.error("Gagal menghapus administrator:", err);
-      alert("Gagal menghapus administrator.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menghapus Admin",
+        description: "Terjadi kesalahan saat mencabut akses akun dari database.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
     } finally {
       setDeletingId(null);
     }
   };
+
 
   if (loading && !showForm) {
     return (
@@ -275,7 +307,7 @@ export default function UserManagementAdmin() {
                     <td className="p-6 text-slate-500">{new Date(p.created_at).toLocaleDateString("id-ID")}</td>
                     <td className="p-6 text-right">
                       <button
-                        onClick={() => handleDeleteUser(p.id)}
+                        onClick={() => confirmDeleteUser(p.id, p.full_name || p.email)}
                         disabled={deletingId === p.id}
                         className="p-1.5 hover:bg-rose-50 text-rose-600 border border-transparent hover:border-rose-100 rounded-lg transition-colors cursor-pointer"
                         title="Hapus Administrator"
@@ -290,6 +322,10 @@ export default function UserManagementAdmin() {
           </div>
         </div>
       )}
+
+      {/* Modern Modal Dialog */}
+      <AdminModal {...modal} />
     </div>
   );
 }
+

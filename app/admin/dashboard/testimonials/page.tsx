@@ -3,11 +3,21 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { MessageSquare, Check, X, Trash2, Star, CheckCircle, Loader2 } from "lucide-react";
+import AdminModal, { ModalState } from "../../../../components/admin/AdminModal";
 
 export default function TestimonialsModeration() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
+  
+  // Custom Modal State
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
+
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
 
   const loadReviews = async () => {
     setLoading(true);
@@ -40,7 +50,15 @@ export default function TestimonialsModeration() {
       loadReviews();
     } catch (err) {
       console.error("Gagal menyetujui ulasan:", err);
-      alert("Gagal menyetujui ulasan.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menyetujui Ulasan",
+        description: "Terjadi kesalahan sistem saat mempublikasikan ulasan ini. Silakan coba lagi.",
+        isConfirmOnly: true,
+        confirmText: "Mengerti",
+        onConfirm: closeModal,
+      });
       setActingId(null);
     }
   };
@@ -56,13 +74,34 @@ export default function TestimonialsModeration() {
       loadReviews();
     } catch (err) {
       console.error("Gagal menolak ulasan:", err);
-      alert("Gagal memperbarui status.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Memperbarui Status",
+        description: "Status ulasan tidak dapat disembunyikan. Silakan periksa koneksi internet Anda.",
+        isConfirmOnly: true,
+        confirmText: "Mengerti",
+        onConfirm: closeModal,
+      });
       setActingId(null);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus ulasan ini secara permanen?")) return;
+  const confirmDelete = (id: string, name: string) => {
+    setModal({
+      isOpen: true,
+      type: "danger",
+      title: "Hapus Ulasan Pengunjung?",
+      description: `Apakah Anda yakin ingin menghapus ulasan dari "${name}" secara permanen? Data yang dihapus tidak dapat dikembalikan.`,
+      confirmText: "Ya, Hapus Permanen",
+      cancelText: "Batal",
+      onCancel: closeModal,
+      onConfirm: () => executeDelete(id),
+    });
+  };
+
+  const executeDelete = async (id: string) => {
+    closeModal();
     setActingId(id);
     try {
       const { error } = await supabase
@@ -73,10 +112,19 @@ export default function TestimonialsModeration() {
       loadReviews();
     } catch (err) {
       console.error("Gagal menghapus ulasan:", err);
-      alert("Gagal menghapus ulasan.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menghapus Data",
+        description: "Gagal menghapus ulasan dari database. Silakan coba beberapa saat lagi.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
       setActingId(null);
     }
   };
+
 
   if (loading) {
     return (
@@ -143,7 +191,7 @@ export default function TestimonialsModeration() {
                     Approve
                   </button>
                   <button
-                    onClick={() => handleDelete(review.id)}
+                    onClick={() => confirmDelete(review.id, review.name)}
                     disabled={actingId === review.id}
                     className="flex items-center gap-1 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold border border-rose-200 transition-colors cursor-pointer"
                   >
@@ -201,7 +249,7 @@ export default function TestimonialsModeration() {
                     Sembunyikan
                   </button>
                   <button
-                    onClick={() => handleDelete(review.id)}
+                    onClick={() => confirmDelete(review.id, review.name)}
                     disabled={actingId === review.id}
                     className="flex items-center gap-1 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-xs font-bold border border-rose-200 transition-colors cursor-pointer"
                   >
@@ -215,6 +263,10 @@ export default function TestimonialsModeration() {
         )}
       </div>
 
+      {/* Modern Modal Dialog */}
+      <AdminModal {...modal} />
+
     </div>
   );
 }
+

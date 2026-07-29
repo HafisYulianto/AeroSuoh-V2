@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import NextImage from "next/image";
+import AdminModal, { ModalState } from "../../../components/admin/AdminModal";
 
 export default function AdminDashboardLayout({
   children,
@@ -32,6 +33,34 @@ export default function AdminDashboardLayout({
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Custom Modal State for Logout Confirmation
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
+
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
+
+  const confirmLogout = () => {
+    setModal({
+      isOpen: true,
+      type: "warning",
+      title: "Keluar dari Sistem Admin?",
+      description: "Sesi Anda akan diakhiri dan Anda harus masuk kembali untuk mengelola portal AeroSuoh.",
+      confirmText: "Ya, Keluar",
+      cancelText: "Batal",
+      onCancel: closeModal,
+      onConfirm: executeLogout,
+    });
+  };
+
+  const executeLogout = async () => {
+    closeModal();
+    await supabase.auth.signOut();
+    router.push("/admin");
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -166,7 +195,7 @@ export default function AdminDashboardLayout({
           </div>
 
           <button 
-            onClick={handleLogout}
+            onClick={confirmLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-600 transition-all cursor-pointer"
           >
             <LogOut size={14} />
@@ -187,6 +216,10 @@ export default function AdminDashboardLayout({
       <main className="flex-1 p-6 md:p-10 max-w-full overflow-x-hidden min-h-[calc(100vh-72px)] md:min-h-screen">
         {children}
       </main>
+
+      {/* Modern Modal Dialog for Admin Actions */}
+      <AdminModal {...modal} />
     </div>
   );
 }
+

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { AlertTriangle, X } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function SafetyAlert() {
+  const pathname = usePathname();
   const { t } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
 
@@ -16,7 +18,7 @@ export default function SafetyAlert() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!isVisible) return null;
+  if (pathname?.startsWith("/admin") || !isVisible) return null;
 
   return (
     <div className="fixed bottom-6 left-4 md:left-6 z-[100] bg-amber-500 text-amber-950 px-4 py-4 rounded-2xl shadow-2xl max-w-sm border-2 border-amber-400 animate-in slide-in-from-bottom-5 fade-in duration-500 print:hidden">

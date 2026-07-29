@@ -3,12 +3,22 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { Ticket, Check, X, Trash2, Calendar, Users, Home, Loader2, Search } from "lucide-react";
+import AdminModal, { ModalState } from "../../../../components/admin/AdminModal";
 
 export default function BookingsAdmin() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actingId, setActingId] = useState<string | null>(null);
+
+  // Custom Modal State
+  const [modal, setModal] = useState<ModalState>({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
+
+  const closeModal = () => setModal((prev) => ({ ...prev, isOpen: false }));
 
   // Filters
   const [statusFilter, setStatusFilter] = useState("all");
@@ -67,14 +77,35 @@ export default function BookingsAdmin() {
       loadBookings();
     } catch (err) {
       console.error("Gagal update status booking:", err);
-      alert("Gagal merubah status.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Mengubah Status",
+        description: "Terjadi kesalahan saat memperbarui status reservasi. Silakan periksa jaringan Anda.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
     } finally {
       setActingId(null);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Hapus data pemesanan ini secara permanen?")) return;
+  const confirmDelete = (id: string, name: string) => {
+    setModal({
+      isOpen: true,
+      type: "danger",
+      title: "Hapus Reservasi Tiket?",
+      description: `Apakah Anda yakin ingin menghapus data pemesanan atas nama "${name}"? Data pemesanan ini akan terhapus secara permanen.`,
+      confirmText: "Ya, Hapus Reservasi",
+      cancelText: "Batal",
+      onCancel: closeModal,
+      onConfirm: () => executeDelete(id),
+    });
+  };
+
+  const executeDelete = async (id: string) => {
+    closeModal();
     setActingId(id);
     try {
       const { error } = await supabase
@@ -85,11 +116,20 @@ export default function BookingsAdmin() {
       loadBookings();
     } catch (err) {
       console.error("Gagal menghapus booking:", err);
-      alert("Gagal menghapus data.");
+      setModal({
+        isOpen: true,
+        type: "danger",
+        title: "Gagal Menghapus Reservasi",
+        description: "Gagal menghapus data reservasi dari database. Silakan coba lagi nanti.",
+        isConfirmOnly: true,
+        confirmText: "Tutup",
+        onConfirm: closeModal,
+      });
     } finally {
       setActingId(null);
     }
   };
+
 
   if (loading) {
     return (
@@ -234,7 +274,7 @@ export default function BookingsAdmin() {
                           </>
                         )}
                         <button
-                          onClick={() => handleDelete(b.id)}
+                          onClick={() => confirmDelete(b.id, b.name)}
                           disabled={actingId === b.id}
                           className="p-1.5 bg-slate-50 hover:bg-slate-200 text-slate-500 hover:text-slate-800 border border-slate-200 rounded-lg transition-all cursor-pointer"
                           title="Hapus Permanen"
@@ -250,6 +290,9 @@ export default function BookingsAdmin() {
           </table>
         </div>
       </div>
+
+      {/* Modern Modal Dialog */}
+      <AdminModal {...modal} />
     </div>
   );
 }
