@@ -43,11 +43,28 @@ export default function Navbar() {
     }
   }, []);
 
+  // === LOGIKA KUNCI KLIK UTK MENGHILANGKAN DELAY/FLICKER ===
+  const isClickingRef = useRef(false);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleNavClick = (sectionId: string) => {
+    setActiveSection(sectionId);
+    isClickingRef.current = true;
+
+    if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
+    clickTimeoutRef.current = setTimeout(() => {
+      isClickingRef.current = false;
+    }, 1000);
+  };
+
   // === SCROLLSPY LOGIC ===
   useEffect(() => {
     const sectionIds = ["home", "about", "gallery", "explorer", "dashboard"];
 
     const handleScroll = () => {
+      // Jika baru saja diklik, kunci scrollspy agar garis hijau tidak flicker/delay selama animasi scroll
+      if (isClickingRef.current) return;
+
       // Jika di posisi paling atas halaman (0-150px), selalu aktifkan 'home' (Beranda)
       if (window.scrollY < 150) {
         setActiveSection("home");
@@ -94,7 +111,7 @@ export default function Navbar() {
               priority
               className="h-10 sm:h-12 lg:h-[8.75rem] w-auto object-contain cursor-pointer -ml-1 sm:-ml-2 shrink-0"
               onClick={() => {
-                setActiveSection("home");
+                handleNavClick("home");
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
             />
@@ -104,19 +121,19 @@ export default function Navbar() {
           {/* Menu Navigasi & Tombol Bahasa (DESKTOP) */}
           <div className="hidden lg:flex items-center gap-6 md:gap-8">
             <div className="flex space-x-8">
-              <a href="#home" onClick={() => setActiveSection("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Home size={20} /> <span>{t("nav_home")}</span>
               </a>
-              <a href="#about" onClick={() => setActiveSection("about")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#about" onClick={() => handleNavClick("about")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Info size={20} /> <span>{t("nav_about")}</span>
               </a>
-              <a href="#gallery" onClick={() => setActiveSection("gallery")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#gallery" onClick={() => handleNavClick("gallery")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Camera size={20} /> <span>{t("nav_gallery")}</span>
               </a>
-              <a href="#explorer" onClick={() => setActiveSection("explorer")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#explorer" onClick={() => handleNavClick("explorer")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Map size={20} /> <span>{t("nav_map")}</span>
               </a>
-              <a href="#dashboard" onClick={() => setActiveSection("dashboard")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <a href="#dashboard" onClick={() => handleNavClick("dashboard")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
                 <Activity size={20} /> <span>{t("nav_dash")}</span>
               </a>
             </div>
@@ -219,19 +236,19 @@ export default function Navbar() {
 
 
           <div className="flex flex-col px-4 py-6 space-y-4">
-            <a href="#home" onClick={() => { setActiveSection("home"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
+            <a href="#home" onClick={() => { handleNavClick("home"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Home size={20} /> <span>{t("nav_home")}</span>
             </a>
-            <a href="#about" onClick={() => { setActiveSection("about"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
+            <a href="#about" onClick={() => { handleNavClick("about"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Info size={20} /> <span>{t("nav_about")}</span>
             </a>
-            <a href="#gallery" onClick={() => { setActiveSection("gallery"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
+            <a href="#gallery" onClick={() => { handleNavClick("gallery"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Camera size={20} /> <span>{t("nav_gallery")}</span>
             </a>
-            <a href="#explorer" onClick={() => { setActiveSection("explorer"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
+            <a href="#explorer" onClick={() => { handleNavClick("explorer"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Map size={20} /> <span>{t("nav_map")}</span>
             </a>
-            <a href="#dashboard" onClick={() => { setActiveSection("dashboard"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
+            <a href="#dashboard" onClick={() => { handleNavClick("dashboard"); setIsOpen(false); }} className="flex items-center gap-3 p-3 text-emerald-100 hover:text-white hover:bg-emerald-800/50 rounded-xl transition-all font-medium">
               <Activity size={20} /> <span>{t("nav_dash")}</span>
             </a>
 
