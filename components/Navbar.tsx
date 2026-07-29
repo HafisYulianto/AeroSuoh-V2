@@ -118,42 +118,39 @@ export default function Navbar() {
           </div>
 
           
-          {/* Menu Navigasi & Tombol Bahasa (DESKTOP) */}
-          <div className="hidden lg:flex items-center gap-6 md:gap-8">
-            <div className="flex space-x-8">
-              <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
-                <Home size={20} /> <span>{t("nav_home")}</span>
-              </a>
-              <a href="#about" onClick={() => handleNavClick("about")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
-                <Info size={20} /> <span>{t("nav_about")}</span>
-              </a>
-              <a href="#gallery" onClick={() => handleNavClick("gallery")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
-                <Camera size={20} /> <span>{t("nav_gallery")}</span>
-              </a>
-              <a href="#explorer" onClick={() => handleNavClick("explorer")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
-                <Map size={20} /> <span>{t("nav_map")}</span>
-              </a>
-              <a href="#dashboard" onClick={() => handleNavClick("dashboard")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
-                <Activity size={20} /> <span>{t("nav_dash")}</span>
-              </a>
-            </div>
+          {/* Menu Navigasi (DESKTOP - Presisi Pas di Tengah) */}
+          <div className="hidden lg:flex items-center justify-center gap-6 xl:gap-8 grow px-4">
+            <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <Home size={20} /> <span>{t("nav_home")}</span>
+            </a>
+            <a href="#about" onClick={() => handleNavClick("about")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <Info size={20} /> <span>{t("nav_about")}</span>
+            </a>
+            <a href="#gallery" onClick={() => handleNavClick("gallery")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <Camera size={20} /> <span>{t("nav_gallery")}</span>
+            </a>
+            <a href="#explorer" onClick={() => handleNavClick("explorer")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <Map size={20} /> <span>{t("nav_map")}</span>
+            </a>
+            <a href="#dashboard" onClick={() => handleNavClick("dashboard")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+              <Activity size={20} /> <span>{t("nav_dash")}</span>
+            </a>
+          </div>
 
-            <div className="h-8 w-px bg-emerald-800 mx-1"></div>
+          {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP) === */}
+          <div className="hidden lg:flex items-center gap-4 shrink-0">
+            
+            {/* Tombol Pesan Tiket */}
+            <button 
+              onClick={() => window.dispatchEvent(new Event('open-booking-modal'))}
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transform hover:scale-105 active:scale-95 whitespace-nowrap"
+            >
+              <Ticket size={18} /> <span>{lang === "ID" ? "Pesan Tiket" : "Book Ticket"}</span>
+            </button>
 
-            {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP) === */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               
-              {/* Tombol Pesan Tiket (Dipindah ke Kanan agar proporsional) */}
-              <button 
-                onClick={() => window.dispatchEvent(new Event('open-booking-modal'))}
-                className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transform hover:scale-105 active:scale-95 whitespace-nowrap"
-              >
-                <Ticket size={18} /> <span>{lang === "ID" ? "Pesan Tiket" : "Book Ticket"}</span>
-              </button>
-
-              <div className="flex items-center gap-3">
-              
-              {/* === REVISI: TOGGLE SWITCH AUDIO VERTIKAL (Teks di bawah, tinggi sama dengan ID) === */}
+              {/* TOGGLE SWITCH AUDIO VERTIKAL */}
               <div className="flex flex-col items-center justify-center bg-emerald-900/80 border border-emerald-700/50 px-3 py-2 rounded-2xl shadow-sm h-10 w-[70px]">
                 <div className="flex items-center gap-1.5 cursor-pointer" onClick={toggleAudio}>
                   {isPlaying ? <Volume2 size={14} className="text-emerald-400" /> : <VolumeX size={14} className="text-slate-400" />}
@@ -171,7 +168,6 @@ export default function Navbar() {
                 </div>
                 <span className="text-[9px] text-emerald-100 font-bold uppercase tracking-widest mt-0.5 cursor-pointer" onClick={toggleAudio}>Audio</span>
               </div>
-              {/* ========================================= */}
 
               {/* Tombol Bahasa */}
               <button 
@@ -183,8 +179,6 @@ export default function Navbar() {
                 {lang}
               </button>
             </div>
-            </div>
-
           </div>
 
           {/* === TOMBOL HAMBURGER & PENGATURAN (KHUSUS MOBILE) === */}
