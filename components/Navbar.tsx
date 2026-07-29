@@ -101,8 +101,8 @@ export default function Navbar() {
         
         <div className="flex items-center justify-between h-20 lg:h-32">
           
-          {/* Logo (Kiri - Slot 1 dgn lebar simetris) */}
-          <div className="flex items-center shrink-0 lg:w-[320px] xl:w-[360px]">
+          {/* Logo */}
+          <div className="flex items-center shrink-0">
             <Image 
               src={getSetting("navbar_logo_url", "/logo-aerosuoh2.png")} 
               alt="Logo AeroSuoh" 
@@ -118,27 +118,27 @@ export default function Navbar() {
           </div>
 
           
-          {/* Menu Navigasi (DESKTOP - 100% PERSIS DI TENGAH LAYAR & TANPA NABRAK) */}
-          <div className="hidden lg:flex items-center justify-center gap-3 xl:gap-6 grow px-1">
-            <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-1.5 xl:gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+          {/* Menu Navigasi (DESKTOP - Flex Center Proporsional) */}
+          <div className="hidden lg:flex items-center justify-center gap-4 xl:gap-8 grow px-4">
+            <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Home size={18} className="shrink-0" /> <span>{t("nav_home")}</span>
             </a>
-            <a href="#about" onClick={() => handleNavClick("about")} className={`flex items-center gap-1.5 xl:gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+            <a href="#about" onClick={() => handleNavClick("about")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "about" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Info size={18} className="shrink-0" /> <span>{t("nav_about")}</span>
             </a>
-            <a href="#gallery" onClick={() => handleNavClick("gallery")} className={`flex items-center gap-1.5 xl:gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+            <a href="#gallery" onClick={() => handleNavClick("gallery")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "gallery" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Camera size={18} className="shrink-0" /> <span>{t("nav_gallery")}</span>
             </a>
-            <a href="#explorer" onClick={() => handleNavClick("explorer")} className={`flex items-center gap-1.5 xl:gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+            <a href="#explorer" onClick={() => handleNavClick("explorer")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "explorer" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Map size={18} className="shrink-0" /> <span>{t("nav_map")}</span>
             </a>
-            <a href="#dashboard" onClick={() => handleNavClick("dashboard")} className={`flex items-center gap-1.5 xl:gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
+            <a href="#dashboard" onClick={() => handleNavClick("dashboard")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 text-sm xl:text-base whitespace-nowrap ${activeSection === "dashboard" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Activity size={18} className="shrink-0" /> <span>{t("nav_dash")}</span>
             </a>
           </div>
 
-          {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP - Slot 3 dgn lebar simetris) === */}
-          <div className="hidden lg:flex items-center justify-end gap-3 xl:gap-4 shrink-0 lg:w-[320px] xl:w-[360px]">
+          {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP) === */}
+          <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
             
             {/* Tombol Pesan Tiket */}
             <button 
