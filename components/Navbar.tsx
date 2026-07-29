@@ -73,20 +73,21 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="flex items-center justify-between h-32 md:h-36">
+        <div className="flex items-center justify-between h-20 lg:h-24">
           
           {/* Logo */}
           <div className="flex items-center shrink-0">
             <Image 
               src={getSetting("navbar_logo_url", "/logo-aerosuoh2.png")} 
               alt="Logo AeroSuoh" 
-              width={140}
-              height={140}
+              width={160}
+              height={60}
               priority
-              className="h-[8.75rem] w-auto object-contain cursor-pointer -ml-2 shrink-0"
+              className="h-10 sm:h-12 lg:h-16 w-auto object-contain cursor-pointer -ml-1 sm:-ml-2 shrink-0"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             />
           </div>
+
 
 
           
@@ -203,7 +204,8 @@ export default function Navbar() {
 
       {/* === PANEL MENU DROPDOWN (KHUSUS MOBILE) === */}
       {isOpen && (
-        <div className="lg:hidden absolute top-32 md:top-36 left-0 w-full bg-[#013220]/95 backdrop-blur-md border-t border-emerald-800 shadow-2xl">
+        <div className="lg:hidden absolute top-20 lg:top-24 left-0 w-full bg-[#013220]/95 backdrop-blur-md border-t border-emerald-800 shadow-2xl">
+
 
 
           <div className="flex flex-col px-4 py-6 space-y-4">
