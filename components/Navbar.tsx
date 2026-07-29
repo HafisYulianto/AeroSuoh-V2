@@ -99,10 +99,10 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="flex items-center justify-between h-20 lg:h-32">
+        <div className="flex items-center justify-between h-20 lg:h-32 relative">
           
           {/* Logo */}
-          <div className="flex items-center shrink-0">
+          <div className="flex items-center shrink-0 z-10">
             <Image 
               src={getSetting("navbar_logo_url", "/logo-aerosuoh2.png")} 
               alt="Logo AeroSuoh" 
@@ -118,8 +118,8 @@ export default function Navbar() {
           </div>
 
           
-          {/* Menu Navigasi (DESKTOP - Presisi Pas di Tengah) */}
-          <div className="hidden lg:flex items-center justify-center gap-6 xl:gap-8 grow px-4">
+          {/* Menu Navigasi (DESKTOP - 100% PERSIS DAN PRESISI DI TENGAH NAVBAR) */}
+          <div className="hidden lg:flex items-center justify-center gap-5 xl:gap-8 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-10">
             <a href="#home" onClick={() => handleNavClick("home")} className={`flex items-center gap-2 hover:text-white hover:scale-105 transition-all font-medium border-b-2 pb-1 whitespace-nowrap ${activeSection === "home" ? "text-white border-emerald-400" : "text-emerald-100 border-transparent"}`}>
               <Home size={20} /> <span>{t("nav_home")}</span>
             </a>
