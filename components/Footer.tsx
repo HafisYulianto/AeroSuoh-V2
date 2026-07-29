@@ -16,7 +16,7 @@ export default function Footer() {
             <div className="flex flex-col gap-4">
               {/* flex items-center dibiarkan, tapi ditambahkan -ml-2 di gambar agar rata kiri dengan teks bawahnya */}
             <div className="flex items-center">
-              <Image src="/logo-aerosuoh2.png" alt="Logo AeroSuoh" width={160} height={60} className="h-10 sm:h-12 lg:h-16 w-auto object-contain -ml-1 sm:-ml-2" />  
+              <Image src="/logo-aerosuoh2.png" alt="Logo AeroSuoh" width={200} height={140} className="h-10 sm:h-12 lg:h-[8.75rem] w-auto object-contain -ml-1 sm:-ml-2" />  
             </div>
             <p className="text-emerald-100/70 text-sm leading-relaxed max-w-sm">
               {t("hero_desc")}

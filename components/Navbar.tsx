@@ -73,20 +73,21 @@ export default function Navbar() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="flex items-center justify-between h-20 lg:h-24">
+        <div className="flex items-center justify-between h-20 lg:h-32">
           
           {/* Logo */}
           <div className="flex items-center shrink-0">
             <Image 
               src={getSetting("navbar_logo_url", "/logo-aerosuoh2.png")} 
               alt="Logo AeroSuoh" 
-              width={160}
-              height={60}
+              width={200}
+              height={140}
               priority
-              className="h-10 sm:h-12 lg:h-16 w-auto object-contain cursor-pointer -ml-1 sm:-ml-2 shrink-0"
+              className="h-10 sm:h-12 lg:h-[8.75rem] w-auto object-contain cursor-pointer -ml-1 sm:-ml-2 shrink-0"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             />
           </div>
+
 
 
 
