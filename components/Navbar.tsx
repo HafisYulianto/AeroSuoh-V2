@@ -48,7 +48,13 @@ export default function Navbar() {
     const sectionIds = ["home", "about", "gallery", "explorer", "dashboard"];
 
     const handleScroll = () => {
-      const scrollPos = window.scrollY + 120;
+      // Jika di posisi paling atas halaman (0-150px), selalu aktifkan 'home' (Beranda)
+      if (window.scrollY < 150) {
+        setActiveSection("home");
+        return;
+      }
+
+      const scrollPos = window.scrollY + 200;
 
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const el = document.getElementById(sectionIds[i]);
@@ -58,6 +64,7 @@ export default function Navbar() {
         }
       }
     };
+
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
