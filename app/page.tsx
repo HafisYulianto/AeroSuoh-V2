@@ -30,7 +30,7 @@ export default function Home() {
       {/* Hero Section */}
       <div 
         id="home" 
-        className="relative min-h-screen flex flex-col items-center justify-center px-4 text-center pt-16 print:hidden overflow-hidden isolate"
+        className="relative min-h-screen flex flex-col items-center justify-center px-4 text-center pt-24 print:hidden overflow-hidden isolate"
       >
         {/* Hero Background Image (Optimized by Next.js) — Layer 0 */}
         <Image 
