@@ -18,7 +18,27 @@ export default function SafetyAlert() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Otomatis sembunyikan popup ketika pengguna menyentuh layar (mobile) atau meng-scroll (desktop)
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const handleDismiss = () => {
+      setIsVisible(false);
+    };
+
+    window.addEventListener("scroll", handleDismiss, { passive: true });
+    window.addEventListener("touchstart", handleDismiss, { passive: true });
+    window.addEventListener("click", handleDismiss, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleDismiss);
+      window.removeEventListener("touchstart", handleDismiss);
+      window.removeEventListener("click", handleDismiss);
+    };
+  }, [isVisible]);
+
   if (pathname?.startsWith("/admin") || !isVisible) return null;
+
 
   return (
     <div className="fixed bottom-6 left-4 md:left-6 z-[100] bg-amber-500 text-amber-950 px-4 py-4 rounded-2xl shadow-2xl max-w-sm border-2 border-amber-400 animate-in slide-in-from-bottom-5 fade-in duration-500 print:hidden">
