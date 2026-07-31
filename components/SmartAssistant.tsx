@@ -543,32 +543,102 @@ export default function SmartAssistant() {
     </div>
   );
 
+  // === MODAL 2: AEROBOT CHATBOT ===
   const renderChatbot = () => (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden">
-      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col h-[560px]">
-        <div className="bg-gradient-to-r from-emerald-800 to-emerald-950 p-4 flex justify-between items-center text-white">
-          <div><h3 className="font-bold">AeroBot</h3><p className="text-xs text-emerald-200">Suoh Assistant</p></div>
-          <div className="flex gap-2">
-            <button onClick={toggleLang} className="bg-emerald-700 px-2 py-1 rounded-full text-xs font-bold text-amber-300">{lang}</button>
-            <button onClick={() => setActiveModal(null)}><X size={20} /></button>
+      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col h-[560px]">
+        
+        {/* Chat Header */}
+        <div className="bg-gradient-to-r from-emerald-800 to-emerald-950 p-4 flex justify-between items-center text-white shrink-0 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-500/20 rounded-full border border-emerald-400/30">
+              <Bot size={22} className="text-emerald-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-bold text-base tracking-tight">AeroBot</h3>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                </span>
+              </div>
+              <p className="text-xs text-emerald-200/80">{lang === "ID" ? "Asisten Virtual Suoh" : "Suoh Virtual Assistant"}</p>
+            </div>
           </div>
+          
+          {/* Close Button */}
+          <button 
+            onClick={() => setActiveModal(null)} 
+            className="hover:bg-white/20 p-1.5 rounded-lg transition-colors text-emerald-100 hover:text-white cursor-pointer"
+          >
+            <X size={20} />
+          </button>
         </div>
-        <div className="flex-1 bg-slate-50 p-4 overflow-y-auto flex flex-col gap-3">
-          {messages.map((msg, i) => (
-            <div key={i} className={`p-3 rounded-2xl text-sm ${msg.sender === "bot" ? "bg-white self-start" : "bg-emerald-600 text-white self-end"}`}>{msg.text}</div>
+        
+        {/* Chat Body (Messages) */}
+        <div className="flex-1 bg-slate-50 p-4 overflow-y-auto flex flex-col gap-3 scroll-smooth">
+          {messages.map((msg, idx) => (
+            <div 
+              key={idx} 
+              className={`max-w-[88%] p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-line animate-in fade-in slide-in-from-bottom-2 ${
+                msg.sender === "bot" 
+                  ? "bg-white border border-slate-200/80 text-slate-700 rounded-tl-xs self-start" 
+                  : "bg-emerald-600 text-white rounded-tr-xs self-end font-medium"
+              }`}
+            >
+              {msg.text}
+            </div>
           ))}
-          {isTyping && <div className="text-xs text-slate-500 p-2 italic">AeroBot typing...</div>}
+
+          {/* Bot Typing Indicator */}
+          {isTyping && (
+            <div className="bg-white border border-slate-200/80 text-slate-500 rounded-2xl rounded-tl-xs p-3.5 self-start flex items-center gap-2 text-xs shadow-sm">
+              <Sparkles size={14} className="text-emerald-500 animate-spin" />
+              <span>{lang === "ID" ? "AeroBot sedang mengetik..." : "AeroBot is typing..."}</span>
+            </div>
+          )}
+
+          {/* Scroll Target */}
           <div ref={messagesEndRef} />
         </div>
-        <div className="px-3 py-2 bg-slate-100 overflow-x-auto flex gap-1.5 no-scrollbar">
+
+        {/* Quick Suggestion Chips (Horizontally Scrollable) */}
+        <div className="px-3 py-2 bg-slate-100/80 border-t border-slate-200/60 overflow-x-auto flex items-center gap-1.5 no-scrollbar shrink-0">
+          <span className="text-[10px] font-extrabold uppercase text-slate-400 shrink-0 mr-1 flex items-center gap-1">
+            <Sparkles size={10} className="text-amber-500" />
+            {lang === "ID" ? "Topik:" : "Topics:"}
+          </span>
           {quickChips.map((chip, i) => (
-            <button key={i} onClick={() => handleChipClick(chip.query, chip.label)} className="px-3 py-1 bg-white border text-xs font-semibold rounded-full whitespace-nowrap">{chip.label}</button>
+            <button
+              key={i}
+              onClick={() => handleChipClick(chip.query, chip.label)}
+              disabled={isTyping}
+              className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:border-emerald-300 border border-slate-200 text-slate-700 hover:text-emerald-700 text-xs font-semibold rounded-full whitespace-nowrap transition-all shrink-0 shadow-2xs hover:scale-105 disabled:opacity-50 cursor-pointer"
+            >
+              {chip.label}
+            </button>
           ))}
         </div>
-        <form onSubmit={handleSendMessage} className="p-3 border-t flex gap-2">
-          <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} className="flex-1 bg-slate-100 rounded-full px-4 py-2 text-sm outline-none" placeholder={lang === "ID" ? "Ketik pesan..." : "Type message..."} />
-          <button type="submit" className="p-2 bg-emerald-600 text-white rounded-full"><Send size={18} /></button>
+
+        {/* Chat Input Field */}
+        <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2 shrink-0">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            disabled={isTyping}
+            placeholder={lang === "ID" ? "Ketik pertanyaan Anda (misal: tiket, rute, cuaca)..." : "Type your question (e.g. tickets, route, weather)..."}
+            className="flex-1 bg-slate-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-slate-700 placeholder:text-slate-400"
+          />
+          <button 
+            type="submit" 
+            disabled={!chatInput.trim() || isTyping} 
+            className="p-2.5 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 transition-colors shadow-md flex items-center justify-center shrink-0 cursor-pointer"
+          >
+            <Send size={18} />
+          </button>
         </form>
+
       </div>
     </div>
   );
@@ -577,8 +647,16 @@ export default function SmartAssistant() {
     <>
       {activeModal === "booking" && renderBooking()}
       {activeModal === "chat" && renderChatbot()}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button onClick={() => setActiveModal("chat")} className="p-4 rounded-full shadow-2xl bg-gradient-to-r from-emerald-500 to-emerald-700 text-white animate-pulse" title="AeroBot">
+
+      {/* === FLOATING ACTION BUTTON (FAB) KANAN BAWAH === */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 print:hidden">
+        
+        {/* Tombol Utama Melayang */}
+        <button 
+          onClick={() => setActiveModal("chat")}
+          className="p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:scale-110 hover:shadow-emerald-500/50 animate-pulse cursor-pointer"
+          title="AeroBot Smart Assistant"
+        >
           <MessageCircle size={28} />
         </button>
       </div>
