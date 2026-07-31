@@ -234,4 +234,4 @@ AeroSuoh mendukung Tujuan Pembangunan Berkelanjutan (SDGs) PBB:
 
 ---
 
-*© 2026 AeroSuoh — Tim HMJTI POLINELA. All Rights Reserved.*
+*© 2026 AeroSuoh. All Rights Reserved.*
