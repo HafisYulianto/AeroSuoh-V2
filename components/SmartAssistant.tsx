@@ -1,201 +1,242 @@
 "use client";
 
-// === TAMBAHAN: Import useRef dan useEffect untuk autoscroll chat ===
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Bot, Ticket, Calendar, Users, Home, ArrowRight, CheckCircle2, Send, QrCode } from "lucide-react";
+import { MessageCircle, X, Bot, Ticket, Calendar, Users, Home, ArrowRight, CheckCircle2, Send, QrCode, Globe, Sparkles } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { supabase } from "../lib/supabase";
 
 export default function SmartAssistant() {
-  const { lang, t } = useLanguage();
+  const { lang, toggleLang, t } = useLanguage();
   const [activeModal, setActiveModal] = useState<"chat" | "booking" | null>(null);
 
-  // === EVENT LISTENER UNTUK BOOKING DARI NAVBAR ===
   useEffect(() => {
     const handleOpenBooking = () => setActiveModal("booking");
     window.addEventListener('open-booking-modal', handleOpenBooking);
     return () => window.removeEventListener('open-booking-modal', handleOpenBooking);
   }, []);
 
-  // === STATE UNTUK FORM BOOKING ===
   const [bookingStep, setBookingStep] = useState(1);
   const [bookingData, setBookingData] = useState({ name: "", phone: "", date: "", guests: 1, type: "", homestay: "" });
   const [bookingErrors, setBookingErrors] = useState<{name?: string; phone?: string; date?: string; guests?: string}>({});
 
-  // === STATE UNTUK AEROBOT (CHATBOT) ===
   const [chatInput, setChatInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
     { 
       sender: "bot", 
       text: lang === "ID" 
-        ? "Halo! Saya AeroBot 🤖. Asisten virtual pintar Anda untuk kawasan Suoh. Ada yang bisa saya bantu? (Coba ketik: tiket, cuaca, homestay, atau jam buka)" 
-        : "Hello! I'm AeroBot 🤖. Your smart virtual assistant for the Suoh region. How can I help you today? (Try typing: ticket, weather, homestay, or open hours)" 
+        ? "Halo! Saya AeroBot 🤖. Asisten virtual pintar Anda untuk kawasan Suoh. Ada yang bisa saya bantu?\n\n💡 *Pilih topik pertanyaan cepat di bawah ini atau ketik pesan Anda!*" 
+        : "Hello! I'm AeroBot 🤖. Your smart virtual assistant for the Suoh region. How can I help you today?\n\n💡 *Choose a quick topic below or type your message!*" 
     }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll chat ke bawah saat ada pesan baru
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  // === LOGIKA OTAK AEROBOT ===
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 1) {
+        return [{
+          sender: "bot",
+          text: lang === "ID"
+            ? "Halo! Saya AeroBot 🤖. Asisten virtual pintar Anda untuk kawasan Suoh. Ada yang bisa saya bantu?\n\n💡 *Pilih topik pertanyaan cepat di bawah ini atau ketik pesan Anda!*"
+            : "Hello! I'm AeroBot 🤖. Your smart virtual assistant for the Suoh region. How can I help you today?\n\n💡 *Choose a quick topic below or type your message!*"
+        }];
+      }
+      return prev;
+    });
+  }, [lang]);
+
+  const quickChips = lang === "ID" ? [
+    { label: "🎫 Tiket & Harga", query: "tiket" },
+    { label: "🌤️ Cuaca & Suhu", query: "cuaca" },
+    { label: "🏡 Homestay", query: "homestay" },
+    { label: "📍 Rute & Akses", query: "rute" },
+    { label: "🛡️ Keamanan Gas", query: "keamanan" },
+    { label: "🌋 Spot Wisata", query: "danau" },
+    { label: "☕ Kuliner & Kopi", query: "kuliner" },
+    { label: "🎒 Outfit & Sepatu", query: "pakaian" },
+    { label: "⛺ Camping & Foto", query: "aktivitas" },
+    { label: "🚙 Ojek & Parkir", query: "kendaraan" },
+    { label: "📱 Sinyal Internet", query: "sinyal" },
+    { label: "📜 Sejarah & Mitos", query: "sejarah" },
+    { label: "📞 Kontak Admin", query: "kontak" },
+  ] : [
+    { label: "🎫 Tickets & Price", query: "ticket" },
+    { label: "🌤️ Weather & Temp", query: "weather" },
+    { label: "🏡 Homestays", query: "homestay" },
+    { label: "📍 Routes & Maps", query: "route" },
+    { label: "🛡️ Safety & Gas", query: "safe" },
+    { label: "🌋 Attractions", query: "lake" },
+    { label: "☕ Food & Coffee", query: "food" },
+    { label: "🎒 Outfit & Shoes", query: "clothes" },
+    { label: "⛺ Camping & Drones", query: "activity" },
+    { label: "🚙 Bikes & Parking", query: "transport" },
+    { label: "📱 Signal & Wifi", query: "signal" },
+    { label: "📜 History & Myths", query: "history" },
+    { label: "📞 Admin Contact", query: "contact" },
+  ];
+
+  const processBotReply = (userQuery: string) => {
+    setIsTyping(true);
+
+    setTimeout(() => {
+      let botReply = "";
+      const inputLower = userQuery.toLowerCase();
+
+      if (lang === "ID") {
+        if (inputLower.includes("halo") || inputLower.includes("hai") || inputLower.includes("pagi") || inputLower.includes("siang") || inputLower.includes("sore") || inputLower.includes("malam") || inputLower.includes("assalamualaikum") || inputLower.includes("salam")) {
+          botReply = "Halo! Saya AeroBot 🤖. Ada yang bisa saya bantu terkait informasi wisata, tiket, rute, atau kondisi geotermal Suoh hari ini? 👋";
+        } 
+        else if (inputLower.includes("tiket") || inputLower.includes("harga") || inputLower.includes("bayar") || inputLower.includes("biaya") || inputLower.includes("tarif") || inputLower.includes("masuk") || inputLower.includes("karcis") || inputLower.includes("qris") || inputLower.includes("promo") || inputLower.includes("diskon")) {
+          botReply = "🎫 **Informasi Tiket & Biaya Suoh:**\n\n• **Day Trip Pass:** Rp 25.000 / orang (Akses kawasan danau & titik kawah)\n• **Eco-Staycation:** Mulai Rp 175.000 / malam (Tiket + Homestay warga lokal)\n• **Retribusi Parkir:** Motor Rp 5.000 | Mobil Rp 10.000\n\nPembayaran mendukung Cash, QRIS, & M-Banking. Klik tombol *Pesan Tiket & Homestay* untuk pemesanan langsung! 🎟️";
+        } 
+        else if (inputLower.includes("homestay") || inputLower.includes("nginap") || inputLower.includes("menginap") || inputLower.includes("hotel") || inputLower.includes("penginapan") || inputLower.includes("tidur") || inputLower.includes("villa") || inputLower.includes("kamar") || inputLower.includes("cabin")) {
+          botReply = "🏡 **Akomodasi & Homestay Lokal:**\n\nKami bekerjasama dengan warga lokal Suoh menyediakan:\n1. **Homestay Danau Asam** (View danau, fasilitas air hangat alami) - Rp 175.000/malam\n2. **Geothermal Cabin** (Suasana pedesaan asri dekat area kawah) - Rp 250.000/malam\n\nFasilitas mencakup kasur nyaman, kamar mandi bersih, & sarapan khas lokal!";
+        } 
+        else if (inputLower.includes("aman") || inputLower.includes("bahaya") || inputLower.includes("gas") || inputLower.includes("meletus") || inputLower.includes("belerang") || inputLower.includes("beracun") || inputLower.includes("takut") || inputLower.includes("resiko") || inputLower.includes("erupsi") || inputLower.includes("sirine") || inputLower.includes("masker")) {
+          botReply = "🛡️ **Protokol Keamanan Geotermal Suoh:**\n\nKawasan Suoh dipantau ketat 24/7 oleh sensor real-time AeroSuoh (H₂S & SO₂).\n• Selalu berada di **Zona Hijau** & patuhi papan petunjuk keselamatan.\n• Wajib memakai masker respirator (disediakan di basecamp).\n• Dilarang keras menyentuh lumpur mendidih!\n\nJika sensor mendeteksi batas gas meningkat, sirine peringatan dini akan berbunyi otomatis. Selama patuhi arahan, kunjungan 100% aman! 🟢";
+        } 
+        else if (inputLower.includes("lokasi") || inputLower.includes("dimana") || inputLower.includes("rute") || inputLower.includes("jalan") || inputLower.includes("akses") || inputLower.includes("alamat") || inputLower.includes("maps") || inputLower.includes("jarak") || inputLower.includes("arah")) {
+          botReply = "🗺️ **Rute & Akses Lokasi:**\n\nSuoh berada di Kab. Lampung Barat. Tersedia 2 rute utama:\n1. **Via Liwa (Utara):** ±45 km (1.5 - 2 jam), jalan beraspal mulus melintasi bukit kopi.\n2. **Via Tanggamus / Wonosobo (Selatan):** ±80 km (2.5 - 3 jam), disarankan motor trail / mobil 4x4.\n\nCek visualisasi peta satelit 3D interaktif di menu *Pemetaan Udara*!";
+        } 
+        else if (inputLower.includes("jam") || inputLower.includes("buka") || inputLower.includes("tutup") || inputLower.includes("operasional") || inputLower.includes("kapan") || inputLower.includes("waktu") || inputLower.includes("jadwal")) {
+          botReply = "🌅 **Jam Operasional & Waktu Terbaik:**\n\n• **Buka Setiap Hari:** 07.00 - 17.00 WIB.\n• **Waktu Terbaik Pagi:** 07.00 - 09.00 WIB (kabut tebal danau & udara segar pegunungan).\n• **Waktu Terbaik Sore:** 15.30 - 17.00 WIB (sunset estetik di Danau Lebar).";
+        } 
+        else if (inputLower.includes("danau") || inputLower.includes("kawah") || inputLower.includes("wisata") || inputLower.includes("tempat") || inputLower.includes("destinasi") || inputLower.includes("spot") || inputLower.includes("bagus") || inputLower.includes("obyek")) {
+          botReply = "🌋 **6 Spot Utama Geotermal Suoh:**\n\n1. **Danau Asam** - Danau vulkanik eksotis bersuhu hangat & asam.\n2. **Danau Lebar** - Danau air tawar terluas, pusat perahu & mancing.\n3. **Danau Minyak** - Air berkilau unik seperti lapisan minyak.\n4. **Pasir Kuning** - Padang endapan belerang mengkristal.\n5. **Kawah Nirwana** - Letupan lumpur panas mendidih hingga 100°C.\n6. **Kawah Keramikan** - Kerak silika mengeras mirip lantai keramik pecah.";
+        } 
+        else if (inputLower.includes("cuaca") || inputLower.includes("suhu") || inputLower.includes("hujan") || inputLower.includes("pantau") || inputLower.includes("sensor") || inputLower.includes("panas") || inputLower.includes("dingin") || inputLower.includes("iklim")) {
+          botReply = "🌤️ **Kondisi Cuaca & Suhu:**\n\n• Suhu Udara Rata-rata: 20°C - 26°C (sejuk pegunungan).\n• Suhu Air Danau Asam: ~35°C - 45°C.\n• Suhu Permukaan Kawah: >90°C!\n\nAnda dapat mengecek grafik live cuaca, suhu air, dan kadar gas H₂S di menu *Dasbor Sensor* (Eco-Monitor) kami! 📊";
+        } 
+        else if (inputLower.includes("sejarah") || inputLower.includes("mitos") || inputLower.includes("cerita") || inputLower.includes("asal usul") || inputLower.includes("gempa") || inputLower.includes("legenda") || inputLower.includes("naga")) {
+          botReply = "📜 **Sejarah & Legenda Mistik Suoh:**\n\n• **Sejarah:** Kaldera Suoh terbentuk akibat gempa freatik dahsyat 7.5 SR pada 25 Juni 1933.\n• **Mitos Lokal:** Gemuruh kawah diyakini warga lokal sebagai dorongan napas Naga Penjaga Danau yang tertidur di bawah bumi. Dilarang melempar batu atau berkata kotor di area kawah!";
+        } 
+        else if (inputLower.includes("ngapain") || inputLower.includes("aktivitas") || inputLower.includes("foto") || inputLower.includes("camping") || inputLower.includes("kemah") || inputLower.includes("mancing") || inputLower.includes("drone") || inputLower.includes("kegiatan") || inputLower.includes("healing")) {
+          botReply = "⛺ **Aktivitas Favorit Pengunjung:**\n\n1. **Camping di Danau Lebar** (spot sunrise & api unggun malam hari).\n2. **Fotografi & Drone** di Kawah Keramikan (lanskap ala planet Mars).\n3. **Keliling Danau Lebar** naik perahu dayung warga.\n4. **Memancing ikan endemik** & terapi santai air hangat alami.";
+        } 
+        else if (inputLower.includes("kendaraan") || inputLower.includes("mobil") || inputLower.includes("motor") || inputLower.includes("transportasi") || inputLower.includes("ojek") || inputLower.includes("parkir") || inputLower.includes("trail")) {
+          botReply = "🚙 **Transportasi & Kendaraan:**\n\n• Mobil/Motor dapat parkir aman di Basecamp Utama.\n• Untuk menuju titik kawah Keramikan, sangat disarankan menyewa **Ojek Motor Trail Lokal** (~Rp 50.000 PP) yang mahir menembus rute tanah belerang!";
+        } 
+        else if (inputLower.includes("makan") || inputLower.includes("minum") || inputLower.includes("kuliner") || inputLower.includes("warung") || inputLower.includes("restoran") || inputLower.includes("lapar") || inputLower.includes("kopi") || inputLower.includes("oleh-oleh")) {
+          botReply = "☕ **Kuliner & Kopi Khas Suoh:**\n\nNikmati santapan hangat di warung basecamp:\n• **Kopi Robusta Asli Lampung Barat** (aroma vulkanik khas petik merah).\n• Nasi Goreng Kampung, Mie Rebus Panas, & Ikan Bakar Danau Lebar.\n• Oleh-oleh bubuk kopi pilihan langsung dari petani lokal!";
+        }
+        else if (inputLower.includes("sinyal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("telkomsel") || inputLower.includes("jaringan") || inputLower.includes("blank")) {
+          botReply = "📱 **Informasi Jaringan & Sinyal:**\n\n• Sinyal **Telkomsel** cukup stabil di area Basecamp & Homestay.\n• Di area kawah tengah terdapat titik *blank-spot* (sangat cocok untuk digital detox!).\n• Disarankan membawa Powerbank & mengunduh peta rute sebelum berangkat.";
+        }
+        else if (inputLower.includes("baju") || inputLower.includes("pakaian") || inputLower.includes("outfit") || inputLower.includes("pakai") || inputLower.includes("sandal") || inputLower.includes("sepatu") || inputLower.includes("jaket")) {
+          botReply = "👟 **Rekomendasi Pakaian & Outfit:**\n\n• **WAJIB:** Sepatu kets / trekking tertutup. (*Dilarang keras memakai sandal karena tanah kawah sangat panas!*)\n• Gunakan pakaian berbahan nyaman & menyerap keringat.\n• Bawa jaket hangat jika berencana menginap atau camping.";
+        }
+        else if (inputLower.includes("anak") || inputLower.includes("keluarga") || inputLower.includes("bayi") || inputLower.includes("balita") || inputLower.includes("orang tua") || inputLower.includes("lansia") || inputLower.includes("disabilitas")) {
+          botReply = "👨‍👩‍👧‍👦 **Aksesibilitas Keluarga:**\n\n• Area Danau Asam & Danau Lebar sangat aman untuk anak-anak dan lansia.\n• Untuk Kawah Keramikan & Nirwana, anak-anak & lansia disarankan memantau dari **Zona Pandang Aman** (Zona Hijau) & wajib didampingi.";
+        }
+        else if (inputLower.includes("pembuat") || inputLower.includes("developer") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("siapa yang buat") || inputLower.includes("teknokrat") || inputLower.includes("polinela")) {
+          botReply = "💻 **Tentang Pengembang AeroSuoh:**\n\nPlatform canggih AeroSuoh ini dikembangkan oleh **Hafis Yulianto & Resiana Pahleppi** (Mahasiswa Universitas Teknokrat Indonesia) khusus untuk **Kompetisi Web Development HMJTI POLINELA 2026**!";
+        } 
+        else if (inputLower.includes("vtol") || inputLower.includes("pesawat") || inputLower.includes("kamera udara") || inputLower.includes("explorer")) {
+          botReply = "🚁 **Teknologi Pemetaan AeroSuoh:**\n\nAeroSuoh mensimulasikan pemantauan udara menggunakan drone VTOL-X1 untuk memetakan titik geotermal & danau secara presisi. Anda dapat melacaknya di menu *Pemetaan Udara*!";
+        } 
+        else if (inputLower.includes("bantuan") || inputLower.includes("admin") || inputLower.includes("tolong") || inputLower.includes("hubungi") || inputLower.includes("kontak") || inputLower.includes("nomor") || inputLower.includes("wa") || inputLower.includes("whatsapp") || inputLower.includes("darurat")) {
+          botReply = "📞 **Pusat Bantuan & Kontak Admin:**\n\nButuh bantuan khusus, booking rombongan, atau petunjuk jalan?\n• **WhatsApp Admin:** +62 822-7948-5813\n• **Email:** aerosuoh@gmail.com\n\nAtau klik tombol *Pesan Tiket & Homestay* di bagian atas!";
+        } 
+        else if (inputLower.includes("terima kasih") || inputLower.includes("makasih") || inputLower.includes("thanks") || inputLower.includes("ok") || inputLower.includes("oke") || inputLower.includes("baik") || inputLower.includes("mantap") || inputLower.includes("sip")) {
+          botReply = "Sama-sama! 🙏 Senang bisa membantu Anda. Selamat merencanakan petualangan ke Suoh! Jangan lupa selalu utamakan keselamatan ya. ✨";
+        }
+        else {
+          botReply = "Maaf, AeroBot belum mengenali pertanyaan tersebut. 🙏 Silakan coba tombol pilihan topik cepat di atas atau gunakan kata kunci seperti 'Tiket', 'Homestay', 'Rute', 'Keamanan', 'Cuaca', 'Pakaian', atau 'Kuliner'.";
+        }
+      } 
+      
+      else {
+        if (inputLower.includes("hello") || inputLower.includes("hi") || inputLower.includes("morning") || inputLower.includes("afternoon") || inputLower.includes("evening") || inputLower.includes("greetings")) {
+          botReply = "Hello! I am AeroBot 🤖. How can I assist you today regarding Suoh's tourism, tickets, routes, or geothermal conditions? 👋";
+        } 
+        else if (inputLower.includes("ticket") || inputLower.includes("price") || inputLower.includes("cost") || inputLower.includes("pay") || inputLower.includes("fee") || inputLower.includes("pass") || inputLower.includes("qris") || inputLower.includes("promo") || inputLower.includes("discount")) {
+          botReply = "🎫 **Suoh Ticket & Fee Information:**\n\n• **Day Trip Pass:** Rp 25,000 / person (Access to lakes & geothermal viewpoints)\n• **Eco-Staycation:** Starting at Rp 175,000 / night (Ticket + Local Homestay)\n• **Parking Retribution:** Motorbike Rp 5,000 | Car Rp 10,000\n\nPayment supports Cash, QRIS, & M-Banking. Click 'Book Ticket' for direct reservation! 🎟️";
+        } 
+        else if (inputLower.includes("homestay") || inputLower.includes("stay") || inputLower.includes("sleep") || inputLower.includes("hotel") || inputLower.includes("accommodation") || inputLower.includes("room") || inputLower.includes("cabin") || inputLower.includes("villa")) {
+          botReply = "🏡 **Local Accommodations & Homestays:**\n\nWe partner with local Suoh residents to provide:\n1. **Lake Asam Homestay** (Lake view, natural hot spring amenities) - Rp 175,000/night\n2. **Geothermal Cabin** (Rustic scenery near crater area) - Rp 250,000/night\n\nIncludes comfortable bedding, clean bathroom, & authentic local breakfast!";
+        } 
+        else if (inputLower.includes("safe") || inputLower.includes("danger") || inputLower.includes("gas") || inputLower.includes("toxic") || inputLower.includes("erupt") || inputLower.includes("risk") || inputLower.includes("mask") || inputLower.includes("emergency") || inputLower.includes("sulfur")) {
+          botReply = "🛡️ **Suoh Geothermal Safety Protocols:**\n\nThe Suoh geothermal area is strictly monitored 24/7 by AeroSuoh real-time sensors (H₂S & SO₂).\n• Stay within the **Green Zone** & obey safety warning signs.\n• Wear a respirator mask (provided at the basecamp).\n• Strictly NO touching boiling mud!\n\nIf sensors detect elevated gas levels, an early warning siren sounds automatically. Follow guide directions and your visit is 100% safe! 🟢";
+        } 
+        else if (inputLower.includes("location") || inputLower.includes("where") || inputLower.includes("route") || inputLower.includes("road") || inputLower.includes("access") || inputLower.includes("map") || inputLower.includes("way") || inputLower.includes("distance")) {
+          botReply = "🗺️ **Location & Routes:**\n\nSuoh is located in West Lampung Regency. 2 main routes:\n1. **Via Liwa (North):** ±45 km (1.5 - 2 hrs), smooth paved road across coffee hills.\n2. **Via Tanggamus (South):** ±80 km (2.5 - 3 hrs), recommended for off-road bikes / 4x4 vehicles.\n\nExplore our 3D interactive satellite map in the *Aerial Map* menu!";
+        } 
+        else if (inputLower.includes("hour") || inputLower.includes("open") || inputLower.includes("close") || inputLower.includes("time") || inputLower.includes("when") || inputLower.includes("schedule") || inputLower.includes("best time")) {
+          botReply = "🌅 **Operating Hours & Best Time to Visit:**\n\n• **Open Daily:** 07:00 AM - 05:00 PM (WIB).\n• **Best Morning Time:** 07:00 - 09:00 AM (thick lake mist & fresh mountain air).\n• **Best Evening Time:** 03:30 - 05:00 PM (aesthetic sunset over Lake Lebar).";
+        } 
+        else if (inputLower.includes("lake") || inputLower.includes("crater") || inputLower.includes("destination") || inputLower.includes("place") || inputLower.includes("spot") || inputLower.includes("best") || inputLower.includes("attraction")) {
+          botReply = "🌋 **6 Main Suoh Attractions:**\n\n1. **Lake Asam** - Exotic acidic volcanic lake.\n2. **Lake Lebar** - Largest freshwater lake, boating & fishing hub.\n3. **Lake Minyak** - Unique oil-like glossy water surface.\n4. **Yellow Sand** - Crystallized sulfur fields.\n5. **Nirvana Crater** - Bubbling mud eruptions up to 100°C.\n6. **Keramikan Crater** - Hardened silica crust resembling broken ceramic tiles.";
+        } 
+        else if (inputLower.includes("weather") || inputLower.includes("temperature") || inputLower.includes("temp") || inputLower.includes("rain") || inputLower.includes("monitor") || inputLower.includes("sensor") || inputLower.includes("hot") || inputLower.includes("cold") || inputLower.includes("climate")) {
+          botReply = "🌤️ **Weather & Temperature:**\n\n• Average Air Temp: 20°C - 26°C (cool mountain climate).\n• Lake Asam Water Temp: ~35°C - 45°C.\n• Crater Crust Surface Temp: >90°C!\n\nYou can inspect live weather graphics, water pH, and H₂S gas levels in our *Sensor Dash* (Eco-Monitor) menu! 📊";
+        } 
+        else if (inputLower.includes("history") || inputLower.includes("myth") || inputLower.includes("story") || inputLower.includes("origin") || inputLower.includes("legend") || inputLower.includes("earthquake") || inputLower.includes("dragon")) {
+          botReply = "📜 **History & Mystical Lore of Suoh:**\n\n• **History:** Suoh caldera was formed during a violent 7.5 SR phreatic earthquake on June 25, 1933.\n• **Local Lore:** Crater rumbles are believed by locals to be the breathing of the Lake Guardian Dragon sleeping under the earth. Avoid throwing stones or shouting around crater spots!";
+        } 
+        else if (inputLower.includes("activity") || inputLower.includes("photo") || inputLower.includes("camping") || inputLower.includes("camp") || inputLower.includes("what to do") || inputLower.includes("fishing") || inputLower.includes("drone") || inputLower.includes("boat")) {
+          botReply = "⛺ **Top Visitor Activities:**\n\n1. **Camping at Lake Lebar** (sunrise viewpoints & campfire nights).\n2. **Landscape & Drone Photography** at Keramikan Crater (Mars-like scenery).\n3. **Lake Lebar Boat Tour** with local boatmen.\n4. **Endemic Fish Fishing** & relaxing in natural hot springs.";
+        } 
+        else if (inputLower.includes("transport") || inputLower.includes("car") || inputLower.includes("motorcycle") || inputLower.includes("vehicle") || inputLower.includes("taxi") || inputLower.includes("parking") || inputLower.includes("bike")) {
+          botReply = "🚙 **Transportation & Parking:**\n\n• Cars/Motorcycles can park safely at the Main Basecamp.\n• To enter Keramikan crater spots, we highly recommend hiring a **Local Dirt Bike Taxi** (~Rp 50,000 roundtrip) experienced in sulfur terrain!";
+        }
+        else if (inputLower.includes("food") || inputLower.includes("drink") || inputLower.includes("eat") || inputLower.includes("restaurant") || inputLower.includes("cafe") || inputLower.includes("hungry") || inputLower.includes("coffee") || inputLower.includes("souvenir")) {
+          botReply = "☕ **Local Food & Coffee Specialties:**\n\nEnjoy warm food at basecamp stalls:\n• **Authentic West Lampung Robusta Coffee** (rich volcanic soil aroma).\n• Local Fried Rice, Hot Noodle Soup, & Grilled Lake Fish.\n• Take-home red-cherry Robusta coffee bean pouches directly from local farmers!";
+        }
+        else if (inputLower.includes("signal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("connection") || inputLower.includes("network") || inputLower.includes("telkomsel")) {
+          botReply = "📱 **Network & Signal Info:**\n\n• **Telkomsel** signal is reliable at the Basecamp & Homestays.\n• Central crater areas have some blank spots (perfect for a digital detox!).\n• We recommend carrying a Powerbank & downloading offline maps beforehand.";
+        }
+        else if (inputLower.includes("clothes") || inputLower.includes("wear") || inputLower.includes("outfit") || inputLower.includes("shoes") || inputLower.includes("sandal") || inputLower.includes("jacket")) {
+          botReply = "👟 **Outfit & Shoes Advice:**\n\n• **MANDATORY:** Closed sneakers or trekking shoes. (*Sandals are strictly forbidden as crater ground is boiling hot!*)\n• Wear comfortable, breathable clothes.\n• Bring a warm jacket if planning to stay overnight or camp.";
+        }
+        else if (inputLower.includes("kid") || inputLower.includes("family") || inputLower.includes("baby") || inputLower.includes("child") || inputLower.includes("parent") || inputLower.includes("old") || inputLower.includes("senior")) {
+          botReply = "👨‍👩‍👧‍👦 **Family Accessibility:**\n\n• Lake Asam & Lake Lebar areas are very safe for children and seniors.\n• For Keramikan & Nirvana Craters, children & seniors are advised to view from the **Safe Observation Zone** (Green Zone) under supervision.";
+        }
+        else if (inputLower.includes("developer") || inputLower.includes("creator") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("who made") || inputLower.includes("teknokrat") || inputLower.includes("polinela")) {
+          botReply = "💻 **About AeroSuoh Developers:**\n\nThis platform was built by **Hafis Yulianto & Resiana Pahleppi** (Students at Universitas Teknokrat Indonesia) for the **HMJTI POLINELA 2026 Web Development Competition**!";
+        } 
+        else if (inputLower.includes("vtol") || inputLower.includes("plane") || inputLower.includes("camera") || inputLower.includes("explorer")) {
+          botReply = "🚁 **AeroSuoh Mapping Technology:**\n\nAeroSuoh simulates aerial monitoring using a VTOL-X1 drone to map geothermal points & lakes with precision. Track it in our *Aerial Map* menu!";
+        } 
+        else if (inputLower.includes("help") || inputLower.includes("admin") || inputLower.includes("support") || inputLower.includes("contact") || inputLower.includes("call") || inputLower.includes("whatsapp") || inputLower.includes("emergency")) {
+          botReply = "📞 **Help Center & Admin Contact:**\n\nNeed a tour guide, group reservation, or directions?\n• **WhatsApp Admin:** +62 822-7948-5813\n• **Email:** aerosuoh@gmail.com\n\nOr click the *Book Ticket* button at the top!";
+        } 
+        else if (inputLower.includes("thank") || inputLower.includes("thanks") || inputLower.includes("ok") || inputLower.includes("okay") || inputLower.includes("good") || inputLower.includes("great") || inputLower.includes("awesome")) {
+          botReply = "You're very welcome! 🙏 Glad I could help. Enjoy your trip to Suoh! Always stay safe and have a wonderful time. ✨";
+        }
+        else {
+          botReply = "Sorry, AeroBot hasn't learned that context yet. 🙏 Try clicking one of the quick topic chips above or use keywords like 'Ticket', 'Homestay', 'Route', 'Safety', 'Weather', 'Outfit', or 'Food'.";
+        }
+      }
+
+      setMessages((prev) => [...prev, { sender: "bot", text: botReply }]);
+      setIsTyping(false);
+    }, 800);
+  };
+
   const handleSendMessage = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isTyping) return;
 
-    // 1. Tampilkan pesan user di layar
     const userMsg = chatInput.trim();
     setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
     setChatInput("");
 
-    // 2. Simulasi bot sedang "Mikir" selama 1 detik
-    setTimeout(() => {
-      let botReply = "";
-      const inputLower = userMsg.toLowerCase();
-
-      // ==========================================
-      // Deteksi Kata Kunci (Bahasa Indonesia)
-      // ==========================================
-      if (lang === "ID") {
-        if (inputLower.includes("halo") || inputLower.includes("hai") || inputLower.includes("pagi") || inputLower.includes("siang") || inputLower.includes("sore") || inputLower.includes("malam") || inputLower.includes("assalamualaikum")) {
-          botReply = "Halo! Saya AeroBot. Ada yang bisa saya bantu terkait informasi wisata, tiket, atau kondisi kawasan Suoh hari ini? 👋";
-        } 
-        else if (inputLower.includes("tiket") || inputLower.includes("harga") || inputLower.includes("bayar") || inputLower.includes("biaya") || inputLower.includes("tarif") || inputLower.includes("masuk") || inputLower.includes("karcis")) {
-          botReply = "Harga tiket Day Trip Pass adalah Rp 25.000/orang. Untuk paket menginap Eco-Staycation mulai Rp 175.000/malam. Pesan langsung lewat menu 'Pesan Tiket & Homestay' ya! 🎫";
-        } 
-        else if (inputLower.includes("homestay") || inputLower.includes("nginap") || inputLower.includes("menginap") || inputLower.includes("hotel") || inputLower.includes("penginapan") || inputLower.includes("tidur") || inputLower.includes("villa") || inputLower.includes("kamar")) {
-          botReply = "Kami menyediakan Homestay milik warga lokal yang terintegrasi di sistem Smart Booking. Tersedia Homestay Danau Asam dan Geothermal Cabin. Pesan sekarang melalui menu akomodasi kami! 🏡";
-        } 
-        else if (inputLower.includes("aman") || inputLower.includes("bahaya") || inputLower.includes("gas") || inputLower.includes("meletus") || inputLower.includes("belerang") || inputLower.includes("beracun") || inputLower.includes("takut") || inputLower.includes("resiko")) {
-          botReply = "Kawasan Geotermal Suoh dipantau ketat secara real-time oleh dasbor kami. Selama Anda berada di Zona Hijau, mengikuti arahan guide, dan memakai masker yang disediakan, kunjungan dijamin aman! 🛡️";
-        } 
-        else if (inputLower.includes("lokasi") || inputLower.includes("dimana") || inputLower.includes("rute") || inputLower.includes("jalan") || inputLower.includes("akses") || inputLower.includes("alamat") || inputLower.includes("maps")) {
-          botReply = "Suoh terletak di Kab. Lampung Barat. Ada 2 rute utama: via Liwa (utara) dan via Tanggamus/BNS (selatan). Cek bagian Rute di halaman utama atau Peta Interaktif kami untuk koordinat presisi! 🗺️";
-        } 
-        else if (inputLower.includes("jam") || inputLower.includes("buka") || inputLower.includes("tutup") || inputLower.includes("operasional") || inputLower.includes("kapan") || inputLower.includes("waktu")) {
-          botReply = "Kawasan wisata Suoh buka setiap hari mulai pukul 07.00 hingga 17.00 WIB. Waktu terbaik berkunjung adalah pagi hari (07.00 - 09.00) saat kabut masih menyelimuti danau! 🌅";
-        } 
-        else if (inputLower.includes("danau") || inputLower.includes("kawah") || inputLower.includes("wisata") || inputLower.includes("tempat") || inputLower.includes("destinasi") || inputLower.includes("spot") || inputLower.includes("bagus")) {
-          botReply = "AeroSuoh memiliki 6 spot memukau: Danau Asam, Danau Lebar, Danau Minyak, Pasir Kuning, Kawah Nirwana, dan Kawah Keramikan. Wajib datangi Semuanya! 🌋";
-        } 
-        else if (inputLower.includes("cuaca") || inputLower.includes("suhu") || inputLower.includes("hujan") || inputLower.includes("pantau") || inputLower.includes("sensor") || inputLower.includes("panas") || inputLower.includes("dingin")) {
-          botReply = "Suhu udara di Suoh berkisar 20-25°C. Namun suhu permukaan kawah bisa sangat panas! Cek data live cuaca, suhu air, dan kadar gas H2S di menu Dasbor Sensor (Eco-Monitor) kami! 🌤️";
-        } 
-        else if (inputLower.includes("sejarah") || inputLower.includes("mitos") || inputLower.includes("cerita") || inputLower.includes("asal usul") || inputLower.includes("gempa") || inputLower.includes("legenda")) {
-          botReply = "Kawasan unik ini terbentuk pasca letusan dahsyat gempa Liwa tahun 1933. Banyak cerita mistis soal naga bawah tanah dan air awet muda. Temukan lengkapnya di menu Pesona Suoh! 📜";
-        } 
-        else if (inputLower.includes("ngapain") || inputLower.includes("aktivitas") || inputLower.includes("foto") || inputLower.includes("camping") || inputLower.includes("kemah") || inputLower.includes("mancing") || inputLower.includes("drone")) {
-          botReply = "Aktivitas favorit pengunjung: Fotografi lanskap, menerbangkan drone di Keramikan, memancing di Danau Lebar, dan camping di pinggir danau. Sangat cocok untuk healing! ⛺📸";
-        } 
-        else if (inputLower.includes("kendaraan") || inputLower.includes("mobil") || inputLower.includes("motor") || inputLower.includes("transportasi") || inputLower.includes("ojek") || inputLower.includes("parkir")) {
-          botReply = "Bisa bawa mobil atau motor ke basecamp (area parkir luas & aman). Untuk masuk spot kawah, disarankan menyewa ojek motor trail lokal seharga ~Rp 50.000 agar pengalaman makin seru! 🚙🏍️";
-        } 
-        else if (inputLower.includes("makan") || inputLower.includes("minum") || inputLower.includes("kuliner") || inputLower.includes("warung") || inputLower.includes("restoran") || inputLower.includes("lapar") || inputLower.includes("kopi")) {
-          botReply = "Di sekitar basecamp Danau Lebar terdapat warung-warung warga yang menjual makanan hangat, mi instan, dan Kopi Robusta khas Lampung Barat yang wajib Anda coba! ☕🍜";
-        }
-        else if (inputLower.includes("sinyal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("telkomsel") || inputLower.includes("jaringan")) {
-          botReply = "Sinyal seluler (terutama Telkomsel) sudah cukup stabil di area basecamp dan homestay. Namun di area kawah mungkin sedikit blank-spot. Cocok untuk digital detox! 📱🚫";
-        }
-        else if (inputLower.includes("baju") || inputLower.includes("pakaian") || inputLower.includes("outfit") || inputLower.includes("pakai") || inputLower.includes("sandal") || inputLower.includes("sepatu")) {
-          botReply = "WAJIB gunakan sepatu tertutup (sneakers/trekking), dilarang pakai sandal karena tanah bisa sangat panas. Gunakan pakaian yang nyaman menyerap keringat dan bawa jaket jika menginap! 👟🧥";
-        }
-        else if (inputLower.includes("anak") || inputLower.includes("keluarga") || inputLower.includes("bayi") || inputLower.includes("balita") || inputLower.includes("orang tua")) {
-          botReply = "Untuk area Danau (Asam, Lebar) sangat aman untuk anak & lansia. Namun untuk turun langsung ke Kawah Keramikan/Nirwana, anak-anak dan lansia disarankan hanya memantau dari zona pandang yang disediakan demi keamanan. 👨‍👩‍👧‍👦";
-        }
-        else if (inputLower.includes("pembuat") || inputLower.includes("developer") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("siapa yang buat") || inputLower.includes("teknokrat")) {
-          botReply = "Platform canggih AeroSuoh ini dikembangkan oleh Hafis Yulianto & Resiana Pahleppi, mahasiswa Universitas Teknokrat Indonesia, sebagai dedikasi untuk memajukan pariwisata Lampung Barat! 💻🚀";
-        } 
-        else if (inputLower.includes("vtol") || inputLower.includes("pesawat") || inputLower.includes("kamera udara")) {
-          botReply = "AeroSuoh mensimulasikan pemantauan udara menggunakan drone VTOL-X1 untuk memetakan kawasan geotermal dengan aman. Anda bisa melacaknya di menu Aerial Explorer! 🚁";
-        } 
-        else if (inputLower.includes("bantuan") || inputLower.includes("admin") || inputLower.includes("tolong") || inputLower.includes("hubungi") || inputLower.includes("kontak") || inputLower.includes("nomor") || inputLower.includes("wa") || inputLower.includes("whatsapp")) {
-          botReply = "Butuh bantuan lebih lanjut? Anda bisa menghubungi Admin/Tour Guide lokal kami via WhatsApp melalui tombol kontak di bagian bawah website ini. 📞";
-        } 
-        else if (inputLower.includes("terima kasih") || inputLower.includes("makasih") || inputLower.includes("thanks") || inputLower.includes("ok") || inputLower.includes("oke") || inputLower.includes("baik")) {
-          botReply = "Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi jika ada yang kurang jelas. Selamat merencanakan liburan ke Suoh! ✨";
-        }
-        else {
-          botReply = "Maaf, AeroBot masih terus belajar mengenali konteks tersebut. 🙏 Silakan coba kata kunci seperti 'Harga', 'Lokasi', 'Homestay', 'Keamanan', 'Makanan', atau 'Outfit'.";
-        }
-      } 
-      
-      // ==========================================
-      // Deteksi Kata Kunci (Bahasa Inggris)
-      // ==========================================
-      else {
-        if (inputLower.includes("hello") || inputLower.includes("hi") || inputLower.includes("morning") || inputLower.includes("afternoon") || inputLower.includes("evening")) {
-          botReply = "Hello! I am AeroBot. How can I assist you today regarding Suoh's tourism, tickets, or conditions? 👋";
-        } 
-        else if (inputLower.includes("ticket") || inputLower.includes("price") || inputLower.includes("cost") || inputLower.includes("pay") || inputLower.includes("fee")) {
-          botReply = "The Day Trip Pass is Rp 25.000/person. Eco-Staycation packages start at Rp 175.000/night. You can book directly using the 'Book Ticket' menu! 🎫";
-        } 
-        else if (inputLower.includes("homestay") || inputLower.includes("stay") || inputLower.includes("sleep") || inputLower.includes("hotel") || inputLower.includes("accommodation") || inputLower.includes("room")) {
-          botReply = "We offer local homestays integrated into our Smart Booking system. Available options include Lake Asam Homestay and Geothermal Cabin. Book now via the menu! 🏡";
-        } 
-        else if (inputLower.includes("safe") || inputLower.includes("danger") || inputLower.includes("gas") || inputLower.includes("toxic") || inputLower.includes("erupt") || inputLower.includes("risk")) {
-          botReply = "The Suoh Geothermal area is strictly monitored in real-time. As long as you stay in the Green Zone, follow guide instructions, and wear the provided mask, it is completely safe! 🛡️";
-        } 
-        else if (inputLower.includes("location") || inputLower.includes("where") || inputLower.includes("route") || inputLower.includes("road") || inputLower.includes("access") || inputLower.includes("maps")) {
-          botReply = "Suoh is located in West Lampung. There are 2 main routes: via Liwa (North) and Tanggamus (South). Check our Route Section or Interactive Map for precise coordinates! 🗺️";
-        } 
-        else if (inputLower.includes("hour") || inputLower.includes("open") || inputLower.includes("close") || inputLower.includes("time") || inputLower.includes("when")) {
-          botReply = "The Suoh tourism area is open daily from 07:00 AM to 05:00 PM (WIB). Morning (07.00 - 09.00) is the best time to visit when the mist still covers the lakes! 🌅";
-        } 
-        else if (inputLower.includes("lake") || inputLower.includes("crater") || inputLower.includes("destination") || inputLower.includes("place") || inputLower.includes("spot") || inputLower.includes("best")) {
-          botReply = "AeroSuoh features 6 main destinations: Lake Asam, Lake Lebar, Lake Minyak, Pasir Kuning, Nirvana Crater, and Keramikan Crater. You must see them all! 🌋";
-        } 
-        else if (inputLower.includes("weather") || inputLower.includes("temperature") || inputLower.includes("rain") || inputLower.includes("monitor") || inputLower.includes("sensor") || inputLower.includes("hot") || inputLower.includes("cold")) {
-          botReply = "Air temp is around 20-25°C. But crater surfaces are extremely hot! Check live weather, water pH, and H2S gas levels directly on our Eco-Monitor Dashboard! 🌤️";
-        } 
-        else if (inputLower.includes("history") || inputLower.includes("myth") || inputLower.includes("story") || inputLower.includes("origin") || inputLower.includes("legend") || inputLower.includes("earthquake")) {
-          botReply = "This area was formed by the massive 1933 Liwa earthquake. Discover complete geological stories and local myths about dragons in our Suoh Charm menu! 📜";
-        } 
-        else if (inputLower.includes("activity") || inputLower.includes("photo") || inputLower.includes("camping") || inputLower.includes("camp") || inputLower.includes("what to do") || inputLower.includes("fishing") || inputLower.includes("drone")) {
-          botReply = "Top activities: Landscape photography, flying drones over Keramikan, fishing at Lebar Lake, and safe-zone camping. It's a perfect healing spot! ⛺📸";
-        } 
-        else if (inputLower.includes("transport") || inputLower.includes("car") || inputLower.includes("motorcycle") || inputLower.includes("vehicle") || inputLower.includes("taxi") || inputLower.includes("parking")) {
-          botReply = "You can drive your car/motorcycle to the basecamp (safe parking). To enter crater spots, we recommend renting a local dirt bike taxi (~Rp 50.000) for a fun ride! 🚙🏍️";
-        }
-        else if (inputLower.includes("food") || inputLower.includes("drink") || inputLower.includes("eat") || inputLower.includes("restaurant") || inputLower.includes("cafe") || inputLower.includes("hungry") || inputLower.includes("coffee")) {
-          botReply = "Around the Lebar Lake basecamp, there are local food stalls selling warm meals, instant noodles, and the famous West Lampung Robusta Coffee. You must try it! ☕🍜";
-        }
-        else if (inputLower.includes("signal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("connection") || inputLower.includes("network")) {
-          botReply = "Cellular signal (mainly Telkomsel) is quite stable at the basecamp. However, crater areas might have blank spots. Perfect for a digital detox! 📱🚫";
-        }
-        else if (inputLower.includes("clothes") || inputLower.includes("wear") || inputLower.includes("outfit") || inputLower.includes("shoes") || inputLower.includes("sandal") || inputLower.includes("jacket")) {
-          botReply = "MANDATORY: wear closed shoes (sneakers/trekking). Sandals are prohibited as the ground can be boiling hot. Wear comfortable clothes and bring a jacket if staying overnight! 👟🧥";
-        }
-        else if (inputLower.includes("kid") || inputLower.includes("family") || inputLower.includes("baby") || inputLower.includes("child") || inputLower.includes("parent") || inputLower.includes("old")) {
-          botReply = "The Lake areas are very safe for kids and seniors. However, for active craters (Keramikan/Nirvana), kids and seniors are advised to view only from the designated safe observation zones. 👨‍👩‍👧‍👦";
-        }
-        else if (inputLower.includes("developer") || inputLower.includes("creator") || inputLower.includes("hafis") || inputLower.includes("resiana") || inputLower.includes("pahleppi") || inputLower.includes("who made") || inputLower.includes("teknokrat")) {
-          botReply = "This advanced AeroSuoh platform was developed by Hafis Yulianto & Resiana Pahleppi, students at Universitas Teknokrat Indonesia, dedicated to advancing West Lampung's tourism! 💻🚀";
-        } 
-        else if (inputLower.includes("vtol") || inputLower.includes("plane") || inputLower.includes("camera")) {
-          botReply = "AeroSuoh simulates aerial monitoring using a VTOL-X1 drone to map the geothermal area safely. You can track it in our Aerial Explorer menu! 🚁";
-        } 
-        else if (inputLower.includes("help") || inputLower.includes("admin") || inputLower.includes("support") || inputLower.includes("contact") || inputLower.includes("call") || inputLower.includes("whatsapp")) {
-          botReply = "Need more help? You can contact our Admin/Local Tour Guide via WhatsApp using the contact button at the bottom of the page. 📞";
-        } 
-        else if (inputLower.includes("thank") || inputLower.includes("thanks") || inputLower.includes("ok") || inputLower.includes("okay") || inputLower.includes("good")) {
-          botReply = "You're welcome! Glad I could help. Feel free to ask more questions if needed. Enjoy your trip to Suoh! ✨";
-        }
-        else {
-          botReply = "Sorry, AeroBot is still learning to recognize that word. 🙏 Please try using keywords like 'Price', 'Location', 'Homestay', 'Safety', 'Food', or 'Outfit'.";
-        }
-      }
-
-      // 3. Tampilkan balasan bot
-      setMessages((prev) => [...prev, { sender: "bot", text: botReply }]);
-    }, 1000); // delay 1 detik
+    processBotReply(userMsg);
   };
 
-  // === FUNGSI GENERATOR WHATSAPP LINK (Booking) ===
-  const handleCheckout = async () => {
-    const adminPhone = "6282279485813"; // Ganti dengan nomor WhatsApp admin yang asli
+  const handleChipClick = (queryKey: string, chipLabel: string) => {
+    if (isTyping) return;
+    setMessages((prev) => [...prev, { sender: "user", text: chipLabel }]);
+    processBotReply(queryKey);
+  };
 
-    // Simpan ke Supabase bookings
+  const handleCheckout = async () => {
+    const adminPhone = "6282279485813";
+
     try {
       const { error } = await supabase
         .from("bookings")
@@ -215,382 +256,319 @@ export default function SmartAssistant() {
       console.error("Gagal menyimpan booking:", err);
     }
 
-    let waMessage = "";
-    if (lang === "ID") {
-      waMessage = `Halo Admin AeroSuoh, saya ingin konfirmasi pesanan tiket:\n\n*Nama:* ${bookingData.name}\n*No. HP:* ${bookingData.phone}\n*Paket:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Tanggal:* ${bookingData.date || "Belum dipilih"}\n*Jumlah Orang:* ${bookingData.guests} Orang\n\nMohon info selanjutnya untuk pembayaran. Terima kasih.`;
-    } else {
-      waMessage = `Hello AeroSuoh Admin, I would like to confirm my booking:\n\n*Name:* ${bookingData.name}\n*Phone:* ${bookingData.phone}\n*Package:* ${bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}\n${bookingData.homestay ? `*Homestay:* ${bookingData.homestay}\n` : ""}*Date:* ${bookingData.date || "Not selected"}\n*Guests:* ${bookingData.guests} Pax\n\nPlease provide further instructions for payment. Thank you.`;
-    }
-    const encodedMessage = encodeURIComponent(waMessage);
-    const waUrl = `https://wa.me/${adminPhone}?text=${encodedMessage}`;
-    window.open(waUrl, "_blank");
+    const total = (bookingData.type === "homestay" ? 175000 : 25000) * bookingData.guests;
+    let waMessage = lang === "ID" 
+      ? `Halo Admin AeroSuoh, saya ingin konfirmasi pembayaran untuk pesanan:\n\n*Nama:* ${bookingData.name}\n*Paket:* ${bookingData.type}\n*Total:* Rp ${total.toLocaleString("id-ID")}`
+      : `Hello Admin AeroSuoh, I would like to confirm payment for my booking:\n\n*Name:* ${bookingData.name}\n*Package:* ${bookingData.type}\n*Total:* Rp ${total.toLocaleString("id-ID")}`;
+    
+    window.open(`https://wa.me/${adminPhone}?text=${encodeURIComponent(waMessage)}`, "_blank");
     setActiveModal(null);
     setBookingStep(1);
     setBookingErrors({});
     setBookingData({ name: "", phone: "", date: "", guests: 1, type: "", homestay: "" });
   };
 
-  // === VALIDASI FORM BOOKING STEP 1 ===
-  const validateStep1 = (): boolean => {
+  const validateStep1 = () => {
     const errors: {name?: string; phone?: string; date?: string; guests?: string} = {};
-    
-    if (!bookingData.name.trim()) {
-      errors.name = lang === "ID" ? "Nama wajib diisi" : "Name is required";
-    }
-
-    if (!bookingData.phone.trim()) {
-      errors.phone = lang === "ID" ? "Nomor telepon/WA wajib diisi" : "Phone/WA is required";
-    }
-
-    if (!bookingData.date) {
-      errors.date = lang === "ID" ? "Tanggal kunjungan wajib diisi" : "Visit date is required";
-    } else {
-      const selectedDate = new Date(bookingData.date + "T00:00:00");
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        errors.date = lang === "ID" ? "Tanggal tidak boleh di masa lalu" : "Date cannot be in the past";
-      }
-    }
-    
-    if (!bookingData.guests || bookingData.guests < 1 || isNaN(bookingData.guests)) {
-      errors.guests = lang === "ID" ? "Minimal 1 pengunjung" : "At least 1 guest required";
-    } else if (bookingData.guests > 100) {
-      errors.guests = lang === "ID" ? "Maksimal 100 pengunjung per pesanan" : "Max 100 guests per booking";
-    }
-    
+    if (!bookingData.name.trim()) errors.name = lang === "ID" ? "Nama wajib diisi" : "Name is required";
+    if (!bookingData.phone.trim()) errors.phone = lang === "ID" ? "Nomor telepon/WA wajib diisi" : "Phone/WA is required";
+    if (!bookingData.date) errors.date = lang === "ID" ? "Tanggal wajib diisi" : "Visit date is required";
+    if (!bookingData.guests || bookingData.guests < 1) errors.guests = lang === "ID" ? "Minimal 1" : "Min 1 guest";
     setBookingErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // === MODAL 1: SMART BOOKING ===
+  // === MODAL 1: ALUR BOOKING TIKET & HOMESTAY ===
   const renderBooking = () => (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden">
-      <div className={`bg-white rounded-2xl w-full ${bookingStep === 4 ? 'max-w-2xl' : 'max-w-lg'} overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 transition-all`}>
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden overflow-y-auto">
+      <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
         
-        {/* Header Modal Booking */}
-        <div className="bg-emerald-900 p-5 flex justify-between items-center text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/20 rounded-full -mr-10 -mt-10 blur-xl"></div>
-          <h3 className="font-bold flex items-center gap-2 relative z-10 text-lg">
-            <Ticket size={22} className="text-amber-400" /> 
-            {lang === "ID" ? "Smart Booking AeroSuoh" : "AeroSuoh Smart Booking"}
-          </h3>
-          <button onClick={() => {setActiveModal(null); setBookingStep(1);}} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors relative z-10">
-            <X size={20} />
+        {/* Header Booking */}
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-800 p-6 text-white flex justify-between items-center relative">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full text-emerald-100 mb-2 inline-block">
+              {lang === "ID" ? "Smart Booking AeroSuoh" : "AeroSuoh Smart Booking"}
+            </span>
+            <h3 className="text-2xl font-black">
+              {bookingStep === 1 && (lang === "ID" ? "Formulir Pemesanan Tiket" : "Ticket Booking Form")}
+              {bookingStep === 2 && (lang === "ID" ? "Pilih Paket Kunjungan" : "Select Package")}
+              {bookingStep === 3 && (lang === "ID" ? "Pilihan Homestay Lokal" : "Select Local Homestay")}
+              {bookingStep === 4 && (lang === "ID" ? "Metode Pembayaran QRIS" : "QRIS Payment")}
+            </h3>
+          </div>
+          <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors cursor-pointer">
+            <X size={24} />
           </button>
         </div>
-        
-        <div className="p-6">
-          {/* Progress Bar (Indikator Langkah) */}
-          <div className="flex items-center justify-between mb-8 relative">
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 -z-10"></div>
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-emerald-500 -z-10 transition-all duration-500" style={{ width: `${(bookingStep - 1) * 33.33}%` }}></div>
-            {[1, 2, 3, 4].map((step) => (
-              <div key={step} className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold border-2 transition-colors ${bookingStep >= step ? "bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-500/30" : "bg-white border-slate-300 text-slate-400"}`}>
-                {step}
-              </div>
-            ))}
-          </div>
 
-          {/* STEP 1: Identitas & Tanggal & Jumlah Tamu */}
+        {/* Body Booking */}
+        <div className="p-6">
+          
+          {/* STEP 1: DATA DIRI */}
           {bookingStep === 1 && (
-            <div className="space-y-4 animate-in slide-in-from-right-4 max-h-[60vh] overflow-y-auto pr-1">
+            <div className="space-y-4">
               <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Lengkapi Data Diri & Rencana Kunjungan" : "Complete Personal Data & Visit Plan"}</h4>
-              
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Nama Lengkap" : "Full Name"}</label>
                 <input 
                   type="text" 
-                  value={bookingData.name}
-                  placeholder="e.g. Budi Santoso"
-                  className={`w-full px-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
-                    bookingErrors.name 
-                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
-                      : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                  }`} 
-                  onChange={(e) => { setBookingData({...bookingData, name: e.target.value}); setBookingErrors({...bookingErrors, name: undefined}); }} 
+                  value={bookingData.name} 
+                  onChange={(e) => {
+                    setBookingData({...bookingData, name: e.target.value});
+                    if (bookingErrors.name) setBookingErrors({...bookingErrors, name: undefined});
+                  }} 
+                  placeholder="Contoh: Budi Santoso" 
+                  className={`w-full p-3 bg-slate-50 border ${bookingErrors.name ? 'border-rose-500 bg-rose-50/30' : 'border-slate-200'} rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors`} 
                 />
-                {bookingErrors.name && (
-                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
-                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.name}
-                  </p>
-                )}
+                {bookingErrors.name && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.name}</p>}
               </div>
-
+              
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Nomor WhatsApp" : "WhatsApp Number"}</label>
                 <input 
-                  type="text" 
-                  value={bookingData.phone}
-                  placeholder="e.g. 082279485813"
-                  className={`w-full px-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
-                    bookingErrors.phone 
-                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
-                      : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                  }`} 
-                  onChange={(e) => { setBookingData({...bookingData, phone: e.target.value}); setBookingErrors({...bookingErrors, phone: undefined}); }} 
+                  type="tel" 
+                  value={bookingData.phone} 
+                  onChange={(e) => {
+                    setBookingData({...bookingData, phone: e.target.value});
+                    if (bookingErrors.phone) setBookingErrors({...bookingErrors, phone: undefined});
+                  }} 
+                  placeholder="081234567890" 
+                  className={`w-full p-3 bg-slate-50 border ${bookingErrors.phone ? 'border-rose-500 bg-rose-50/30' : 'border-slate-200'} rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors`} 
                 />
-                {bookingErrors.phone && (
-                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
-                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.phone}
-                  </p>
-                )}
+                {bookingErrors.phone && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.phone}</p>}
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Tanggal Kunjungan" : "Visit Date"}</label>
-                <div className="relative">
-                  <Calendar size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Tanggal Kunjungan" : "Visit Date"}</label>
                   <input 
                     type="date" 
-                    value={bookingData.date}
-                    min={new Date().toISOString().split('T')[0]}
-                    className={`w-full pl-11 pr-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
-                      bookingErrors.date 
-                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
-                        : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                    }`} 
-                    onChange={(e) => { setBookingData({...bookingData, date: e.target.value}); setBookingErrors({...bookingErrors, date: undefined}); }} 
+                    value={bookingData.date} 
+                    onChange={(e) => {
+                      setBookingData({...bookingData, date: e.target.value});
+                      if (bookingErrors.date) setBookingErrors({...bookingErrors, date: undefined});
+                    }} 
+                    className={`w-full p-3 bg-slate-50 border ${bookingErrors.date ? 'border-rose-500 bg-rose-50/30' : 'border-slate-200'} rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors`} 
                   />
+                  {bookingErrors.date && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.date}</p>}
                 </div>
-                {bookingErrors.date && (
-                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
-                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.date}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Jumlah Pengunjung" : "Number of Guests"}</label>
-                <div className="relative">
-                  <Users size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-600" />
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Jumlah Pengunjung" : "Number of Guests"}</label>
                   <input 
                     type="number" 
                     min="1" 
-                    max="100"
-                    value={bookingData.guests}
-                    className={`w-full pl-11 pr-4 py-2 bg-slate-50 border rounded-xl outline-none focus:ring-2 transition-all font-medium text-slate-700 text-sm ${
-                      bookingErrors.guests 
-                        ? "border-red-400 focus:border-red-500 focus:ring-red-500/20" 
-                        : "border-slate-200 focus:border-emerald-500 focus:ring-emerald-500/20"
-                    }`} 
-                    onChange={(e) => { setBookingData({...bookingData, guests: parseInt(e.target.value) || 0}); setBookingErrors({...bookingErrors, guests: undefined}); }} 
+                    max="100" 
+                    value={bookingData.guests} 
+                    onChange={(e) => {
+                      setBookingData({...bookingData, guests: parseInt(e.target.value) || 1});
+                      if (bookingErrors.guests) setBookingErrors({...bookingErrors, guests: undefined});
+                    }} 
+                    className={`w-full p-3 bg-slate-50 border ${bookingErrors.guests ? 'border-rose-500 bg-rose-50/30' : 'border-slate-200'} rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors`} 
                   />
+                  {bookingErrors.guests && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.guests}</p>}
                 </div>
-                {bookingErrors.guests && (
-                  <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
-                    <span className="inline-block w-1 h-1 bg-red-500 rounded-full"></span> {bookingErrors.guests}
-                  </p>
-                )}
               </div>
-              <button onClick={() => { if (validateStep1()) setBookingStep(2); }} className="w-full py-3 mt-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all hover:shadow-lg flex justify-center items-center gap-2 cursor-pointer">
+
+              <button 
+                onClick={() => {
+                  if (validateStep1()) {
+                    setBookingStep(2);
+                  }
+                }}
+                className="w-full mt-4 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
                 {lang === "ID" ? "Lanjutkan" : "Next"} <ArrowRight size={18} />
               </button>
             </div>
           )}
 
-          {/* STEP 2: Pilih Paket (Mix Tiket & Homestay) */}
+          {/* STEP 2: PILIH PAKET */}
           {bookingStep === 2 && (
-            <div className="space-y-4 animate-in slide-in-from-right-4">
+            <div className="space-y-4">
               <h4 className="font-bold text-slate-800 text-lg mb-4">{lang === "ID" ? "Pilih Pengalaman Anda" : "Choose Your Experience"}</h4>
-              
-              <div onClick={() => setBookingData({...bookingData, type: "ticket", homestay: ""})} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${bookingData.type === "ticket" ? "border-emerald-500 bg-emerald-50 shadow-md" : "border-slate-200 hover:border-emerald-300"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <h5 className="font-bold text-emerald-900 flex items-center gap-2"><Ticket size={18} className="text-emerald-600" /> Day Trip Pass</h5>
-                  <span className="text-sm font-bold text-emerald-600">Rp 25.000<span className="text-[10px] font-normal text-slate-500">/org</span></span>
+              <div 
+                onClick={() => setBookingData({...bookingData, type: "daytrip"})}
+                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.type === "daytrip" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold text-slate-800">Day Trip Pass</span>
+                  <span className="font-bold text-emerald-600">Rp 25.000 / orang</span>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">{lang === "ID" ? "Akses 1 hari penuh ke Danau Asam dan titik pantau Kawah Geotermal." : "Full 1-day access to Lake Asam and Geothermal viewpoints."}</p>
               </div>
 
-              <div onClick={() => setBookingData({...bookingData, type: "homestay"})} className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${bookingData.type === "homestay" ? "border-emerald-500 bg-emerald-50 shadow-md" : "border-slate-200 hover:border-emerald-300"}`}>
-                <div className="flex justify-between items-center mb-2">
-                  <h5 className="font-bold text-emerald-900 flex items-center gap-2"><Home size={18} className="text-emerald-600" /> Eco-Staycation</h5>
-                  <span className="text-sm font-bold text-emerald-600">Rp 175.000<span className="text-[10px] font-normal text-slate-500">/malam</span></span>
+              <div 
+                onClick={() => setBookingData({...bookingData, type: "homestay"})}
+                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.type === "homestay" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold text-slate-800">Eco-Staycation</span>
+                  <span className="font-bold text-emerald-600">Mulai Rp 175.000 / malam</span>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">{lang === "ID" ? "Termasuk Day Trip Pass + Menginap 1 malam di Homestay warga lokal." : "Includes Day Trip Pass + 1 Night local Homestay."}</p>
               </div>
 
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setBookingStep(1)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">{lang === "ID" ? "Kembali" : "Back"}</button>
-                <button disabled={!bookingData.type} onClick={() => setBookingStep(bookingData.type === "homestay" ? 3 : 4)} className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed transition-all shadow-md">
+              <div className="flex gap-3 pt-4">
+                <button onClick={() => setBookingStep(1)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors cursor-pointer">{lang === "ID" ? "Kembali" : "Back"}</button>
+                <button 
+                  disabled={!bookingData.type}
+                  onClick={() => {
+                    if (bookingData.type === "homestay") {
+                      setBookingStep(3);
+                    } else {
+                      setBookingStep(4);
+                    }
+                  }} 
+                  className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 transition-colors shadow-lg shadow-emerald-900/20 cursor-pointer"
+                >
                   {lang === "ID" ? "Lanjutkan" : "Next"}
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 3: Katalog Homestay (Muncul Jika Pilih Eco-Staycation) */}
+          {/* STEP 3: PILIH HOMESTAY (Jika pilih staycation) */}
           {bookingStep === 3 && (
-            <div className="space-y-4 animate-in slide-in-from-right-4">
+            <div className="space-y-4">
               <h4 className="font-bold text-slate-800 text-lg mb-4">{lang === "ID" ? "Katalog Homestay Lokal" : "Local Homestay Catalog"}</h4>
-              
-              <div onClick={() => setBookingData({...bookingData, homestay: "Homestay Danau Asam"})} className={`p-3 border-2 rounded-xl cursor-pointer flex gap-4 items-center transition-all ${bookingData.homestay === "Homestay Danau Asam" ? "border-emerald-500 bg-emerald-50 shadow-md" : "border-slate-200 hover:border-emerald-200"}`}>
-                <div className="w-16 h-16 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 shrink-0"><Home size={24} /></div>
-                <div>
-                  <h5 className="font-bold text-sm text-slate-800">Homestay Danau Asam</h5>
-                  <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "View langsung ke danau, fasilitas air hangat alami." : "Direct lake view, natural hot spring facility."}</p>
-                </div>
+              <div 
+                onClick={() => setBookingData({...bookingData, homestay: "Homestay Danau Asam"})}
+                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.homestay === "Homestay Danau Asam" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+              >
+                <span className="font-bold text-slate-800 block">Homestay Danau Asam</span>
+                <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "View langsung ke danau, fasilitas air hangat alami." : "Direct lake view, natural hot spring facility."}</p>
+              </div>
+              <div 
+                onClick={() => setBookingData({...bookingData, homestay: "Geothermal Cabin"})}
+                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.homestay === "Geothermal Cabin" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+              >
+                <span className="font-bold text-slate-800 block">Geothermal Cabin</span>
+                <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "Dekat area kawah, nuansa pedesaan yang asri." : "Near crater area, beautiful rustic vibes."}</p>
               </div>
 
-              <div onClick={() => setBookingData({...bookingData, homestay: "Geothermal Cabin"})} className={`p-3 border-2 rounded-xl cursor-pointer flex gap-4 items-center transition-all ${bookingData.homestay === "Geothermal Cabin" ? "border-emerald-500 bg-emerald-50 shadow-md" : "border-slate-200 hover:border-emerald-200"}`}>
-                <div className="w-16 h-16 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600 shrink-0"><Home size={24} /></div>
-                <div>
-                  <h5 className="font-bold text-sm text-slate-800">Geothermal Cabin</h5>
-                  <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "Dekat area kawah, nuansa pedesaan yang asri." : "Near crater area, beautiful rustic vibes."}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setBookingStep(2)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">{lang === "ID" ? "Kembali" : "Back"}</button>
-                <button disabled={!bookingData.homestay} onClick={() => setBookingStep(4)} className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 transition-all shadow-md">
+              <div className="flex gap-3 pt-4">
+                <button onClick={() => setBookingStep(2)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors cursor-pointer">{lang === "ID" ? "Kembali" : "Back"}</button>
+                <button 
+                  disabled={!bookingData.homestay}
+                  onClick={() => setBookingStep(4)} 
+                  className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 transition-colors shadow-lg shadow-emerald-900/20 cursor-pointer"
+                >
                   {lang === "ID" ? "Lanjutkan" : "Next"}
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 4: Checkout & Ringkasan */}
+          {/* STEP 4: PEMBAYARAN & WHATSAPP CHECKOUT */}
           {bookingStep === 4 && (
-            <div className="animate-in slide-in-from-right-4 py-2">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                  <CheckCircle2 size={32} />
-                </div>
-                <h4 className="font-bold text-xl text-slate-800">{t("qris_title" as any)}</h4>
-                <p className="text-sm text-slate-500 px-4">
-                  {t("qris_instruction" as any)}
-                </p>
-              </div>
+            <div className="space-y-6 text-center">
               
-              <div className="flex flex-col md:flex-row gap-6 mb-6 items-center md:items-stretch">
-                {/* === REAL QRIS IMAGE === */}
-                <div className="bg-white p-2 rounded-xl border-2 border-dashed border-emerald-300 w-[200px] h-[260px] flex flex-col items-center justify-center shadow-sm relative overflow-hidden group shrink-0">
-                  <div className="absolute top-0 w-full h-1 bg-emerald-500 shadow-[0_0_15px_#10b981] animate-[scan_2s_ease-in-out_infinite] z-20"></div>
-                  <img src="/payment/QRIS.png" alt="QRIS Payment" className="w-full h-full object-contain relative z-10 rounded-lg" />
+              {/* Tampilan QRIS */}
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center">
+                <div className="flex items-center gap-2 mb-3 text-slate-700 font-bold text-sm">
+                  <QrCode size={18} className="text-emerald-600" />
+                  <span>{t("qris_title")}</span>
                 </div>
-                <style jsx>{`
-                  @keyframes scan {
-                    0%, 100% { top: 0; }
-                    50% { top: 100%; }
-                  }
-                `}</style>
                 
-                {/* Box Ringkasan */}
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 shadow-inner flex-1 w-full flex flex-col justify-center">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2 mb-4">{lang === "ID" ? "Ringkasan Pesanan & Tagihan" : "Order & Bill Summary"}</p>
-                  
-                  <div className="space-y-3 flex-1">
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-slate-600">{lang === "ID" ? "Paket" : "Package"}</span>
-                      <span className="text-sm font-bold text-slate-800 text-right">{bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}</span>
-                    </div>
-                    
-                    {bookingData.homestay && (
-                      <div className="flex justify-between items-start">
-                        <span className="text-sm text-slate-600">Homestay</span>
-                        <span className="text-sm font-bold text-emerald-700 text-right">{bookingData.homestay}</span>
-                      </div>
-                    )}
-                    
-                    <div className="flex justify-between items-start">
-                      <span className="text-sm text-slate-600">{lang === "ID" ? "Tanggal" : "Date"}</span>
-                      <span className="text-sm font-bold text-slate-800 text-right">{bookingData.date || "-"}</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-start border-b border-slate-200 pb-3">
-                      <span className="text-sm text-slate-600">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
-                      <span className="text-sm font-bold text-slate-800 text-right">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
-                    </div>
-                  </div>
+                {/* Gambar QRIS */}
+                <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-md mb-3">
+                  <img 
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=AEROSUOH_GEOTHERMAL_TOURISM_PAYMENT" 
+                    alt="QRIS AeroSuoh" 
+                    className="w-44 h-44 object-contain"
+                  />
+                </div>
+                <p className="text-xs text-slate-500 max-w-xs">{t("qris_instruction")}</p>
+              </div>
 
-                  <div className="flex justify-between items-center bg-emerald-50 p-3 rounded-lg border border-emerald-100 mt-4">
+              {/* Ringkasan Tagihan */}
+              <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 text-left">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2 mb-4">{lang === "ID" ? "Ringkasan Pesanan & Tagihan" : "Order & Bill Summary"}</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">{lang === "ID" ? "Nama" : "Name"}</span>
+                    <span className="text-sm font-bold text-slate-800">{bookingData.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">{lang === "ID" ? "Paket" : "Package"}</span>
+                    <span className="text-sm font-bold text-slate-800">
+                      {bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}
+                    </span>
+                  </div>
+                  {bookingData.homestay && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-slate-600">Homestay</span>
+                      <span className="text-sm font-bold text-emerald-600">{bookingData.homestay}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">{lang === "ID" ? "Tanggal" : "Date"}</span>
+                    <span className="text-sm font-bold text-slate-800">{bookingData.date || "-"}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-slate-600">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
+                    <span className="text-sm font-bold text-slate-800 text-right">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
+                  </div>
+                  <div className="flex justify-between items-center border-t border-emerald-200 pt-2 mt-2">
                     <span className="text-sm font-bold text-emerald-900">{lang === "ID" ? "Total Tagihan" : "Total Bill"}</span>
-                    <span className="text-lg font-black text-emerald-600">
-                      Rp {(bookingData.type === "homestay" ? 175000 * bookingData.guests : 25000 * bookingData.guests).toLocaleString("id-ID")}
+                    <span className="text-base font-black text-emerald-600">
+                      Rp {((bookingData.type === "homestay" ? 175000 : 25000) * bookingData.guests).toLocaleString("id-ID")}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3">
+              {/* Tombol Konfirmasi WhatsApp */}
+              <div className="space-y-2">
                 <button 
-                  onClick={() => {
-                    const total = bookingData.type === "homestay" ? 175000 * bookingData.guests : 25000 * bookingData.guests;
-                    const packageStr = bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass";
-                    const homeStr = bookingData.homestay ? `%0AHomestay: ${bookingData.homestay}` : "";
-                    const waText = `Halo Admin AeroSuoh, saya ingin konfirmasi pembayaran untuk pesanan:%0A%0APaket: ${packageStr}${homeStr}%0ATanggal: ${bookingData.date}%0AJumlah: ${bookingData.guests} Orang%0A*Total Tagihan: Rp ${total.toLocaleString("id-ID")}*%0A%0A(Bukti transfer QRIS akan saya kirimkan setelah pesan ini).`;
-                    window.open(`https://wa.me/6282279485813?text=${waText}`, "_blank");
-                    handleCheckout();
-                  }} 
-                  className="w-full py-3.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-all shadow-lg hover:shadow-emerald-600/30 flex items-center justify-center gap-2"
+                  onClick={handleCheckout}
+                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/30 transition-all flex items-center justify-center gap-2 text-base cursor-pointer"
                 >
                   <Ticket size={18} /> {lang === "ID" ? "Konfirmasi Pembayaran via WA" : "Confirm Payment via WA"}
                 </button>
-                <button onClick={() => setBookingStep(bookingData.type === "homestay" ? 3 : 2)} className="text-sm font-bold text-slate-500 hover:text-slate-800 transition-colors">
+                <button 
+                  onClick={() => setBookingStep(1)} 
+                  className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 block w-full text-center cursor-pointer"
+                >
                   {lang === "ID" ? "Edit Pesanan" : "Edit Booking"}
                 </button>
               </div>
+
             </div>
           )}
 
         </div>
+
       </div>
     </div>
   );
 
-  // === MODAL 2: AEROBOT (DIREVISI TOTAL) ===
   const renderChatbot = () => (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden">
-      <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col h-[500px]">
-        
-        {/* Chat Header */}
-        <div className="bg-gradient-to-r from-emerald-800 to-emerald-950 p-4 flex justify-between items-center text-white shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/20 rounded-full"><Bot size={24} /></div>
-            <div>
-              <h3 className="font-bold">AeroBot</h3>
-              <p className="text-xs text-emerald-200">{lang === "ID" ? "Asisten Virtual Suoh" : "Suoh Virtual Assistant"}</p>
-            </div>
+      <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col h-[560px]">
+        <div className="bg-gradient-to-r from-emerald-800 to-emerald-950 p-4 flex justify-between items-center text-white">
+          <div><h3 className="font-bold">AeroBot</h3><p className="text-xs text-emerald-200">Suoh Assistant</p></div>
+          <div className="flex gap-2">
+            <button onClick={toggleLang} className="bg-emerald-700 px-2 py-1 rounded-full text-xs font-bold text-amber-300">{lang}</button>
+            <button onClick={() => setActiveModal(null)}><X size={20} /></button>
           </div>
-          <button onClick={() => setActiveModal(null)} className="hover:bg-white/20 p-1.5 rounded-lg transition-colors"><X size={20} /></button>
         </div>
-        
-        {/* Chat Body (Tempat Balasan Muncul) */}
-        <div className="flex-1 bg-slate-50 p-4 overflow-y-auto flex flex-col gap-3 scroll-smooth">
-          {messages.map((msg, idx) => (
-            <div 
-              key={idx} 
-              className={`max-w-[85%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm animate-in fade-in slide-in-from-bottom-2 ${
-                msg.sender === "bot" 
-                  ? "bg-white border border-slate-200 text-slate-700 rounded-tl-none self-start" 
-                  : "bg-emerald-600 text-white rounded-tr-none self-end"
-              }`}
-            >
-              {msg.text}
-            </div>
+        <div className="flex-1 bg-slate-50 p-4 overflow-y-auto flex flex-col gap-3">
+          {messages.map((msg, i) => (
+            <div key={i} className={`p-3 rounded-2xl text-sm ${msg.sender === "bot" ? "bg-white self-start" : "bg-emerald-600 text-white self-end"}`}>{msg.text}</div>
           ))}
-          {/* Elemen kosong untuk target auto-scroll */}
+          {isTyping && <div className="text-xs text-slate-500 p-2 italic">AeroBot typing...</div>}
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Chat Input Field */}
-        <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-100 flex items-center gap-2 shrink-0">
-          <input
-            type="text"
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder={lang === "ID" ? "Ketik pesan..." : "Type a message..."}
-            className="flex-1 bg-slate-100 rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-slate-700"
-          />
-          <button 
-            type="submit" 
-            disabled={!chatInput.trim()} 
-            className="p-2.5 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 transition-colors shadow-md"
-          >
-            <Send size={18} />
-          </button>
+        <div className="px-3 py-2 bg-slate-100 overflow-x-auto flex gap-1.5 no-scrollbar">
+          {quickChips.map((chip, i) => (
+            <button key={i} onClick={() => handleChipClick(chip.query, chip.label)} className="px-3 py-1 bg-white border text-xs font-semibold rounded-full whitespace-nowrap">{chip.label}</button>
+          ))}
+        </div>
+        <form onSubmit={handleSendMessage} className="p-3 border-t flex gap-2">
+          <input value={chatInput} onChange={(e) => setChatInput(e.target.value)} className="flex-1 bg-slate-100 rounded-full px-4 py-2 text-sm outline-none" placeholder={lang === "ID" ? "Ketik pesan..." : "Type message..."} />
+          <button type="submit" className="p-2 bg-emerald-600 text-white rounded-full"><Send size={18} /></button>
         </form>
-
       </div>
     </div>
   );
@@ -599,15 +577,8 @@ export default function SmartAssistant() {
     <>
       {activeModal === "booking" && renderBooking()}
       {activeModal === "chat" && renderChatbot()}
-
-      {/* === FLOATING ACTION BUTTON (FAB) KANAN BAWAH === */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 print:hidden">
-        
-        {/* Tombol Utama Melayang */}
-        <button 
-          onClick={() => setActiveModal("chat")}
-          className="p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center text-white bg-gradient-to-r from-emerald-500 to-emerald-700 hover:scale-110 hover:shadow-emerald-500/50 animate-pulse"
-        >
+      <div className="fixed bottom-6 right-6 z-50">
+        <button onClick={() => setActiveModal("chat")} className="p-4 rounded-full shadow-2xl bg-gradient-to-r from-emerald-500 to-emerald-700 text-white animate-pulse" title="AeroBot">
           <MessageCircle size={28} />
         </button>
       </div>
