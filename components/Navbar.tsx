@@ -138,12 +138,12 @@ export default function Navbar() {
           </div>
 
           {/* === GRUP TOMBOL CTA & PENGATURAN KANAN (DESKTOP) === */}
-          <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0">
+          <div className="hidden lg:flex items-center gap-3 xl:gap-4 shrink-0 -translate-y-1">
             
             {/* Tombol Pesan Tiket */}
             <button 
               onClick={() => window.dispatchEvent(new Event('open-booking-modal'))}
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-4 xl:px-5 py-2.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transform hover:scale-105 active:scale-95 whitespace-nowrap text-xs xl:text-sm"
+              className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-4 xl:px-5 py-2.5 rounded-full font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:shadow-[0_0_25px_rgba(16,185,129,0.6)] transform hover:scale-105 active:scale-95 whitespace-nowrap text-xs xl:text-sm cursor-pointer"
             >
               <Ticket size={16} /> <span>{lang === "ID" ? "Pesan Tiket" : "Book Ticket"}</span>
             </button>
@@ -151,7 +151,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 xl:gap-3">
               
               {/* TOGGLE SWITCH AUDIO VERTIKAL */}
-              <div className="flex flex-col items-center justify-center bg-emerald-900/80 border border-emerald-700/50 px-2.5 xl:px-3 py-2 rounded-2xl shadow-sm h-10 w-[65px] xl:w-[70px]">
+              <div className="flex flex-col items-center justify-center bg-emerald-900/80 border border-emerald-700/50 px-2.5 xl:px-3 py-1.5 rounded-2xl shadow-sm h-10 w-[65px] xl:w-[70px]">
                 <div className="flex items-center gap-1.5 cursor-pointer" onClick={toggleAudio}>
                   {isPlaying ? <Volume2 size={14} className="text-emerald-400" /> : <VolumeX size={14} className="text-slate-400" />}
                   <button
@@ -172,7 +172,7 @@ export default function Navbar() {
               {/* Tombol Bahasa */}
               <button 
                 onClick={toggleLang}
-                className="flex items-center justify-center gap-1.5 xl:gap-2 px-3 xl:px-4 py-2 rounded-full bg-emerald-900/80 border border-emerald-700/50 text-emerald-100 hover:text-white hover:bg-emerald-700 hover:border-emerald-500 hover:shadow-lg transition-all font-bold text-xs xl:text-sm shadow-sm active:scale-95 h-10"
+                className="flex items-center justify-center gap-1.5 xl:gap-2 px-3 xl:px-4 py-2 rounded-full bg-emerald-900/80 border border-emerald-700/50 text-emerald-100 hover:text-white hover:bg-emerald-700 hover:border-emerald-500 hover:shadow-lg transition-all font-bold text-xs xl:text-sm shadow-sm active:scale-95 h-10 cursor-pointer"
                 title="Change Language"
               >
                 <Globe size={16} className={lang === "EN" ? "text-amber-400" : "text-emerald-400"} />
