@@ -207,7 +207,7 @@ export default function SafetyRulesAdmin() {
                 <div className="flex gap-2">
                   <label className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold tracking-wider cursor-pointer">
                     <Upload size={14} />
-                    {uploading ? "Uploading..." : "Upload Foto"}
+                    {uploading ? "Mengunggah..." : "Unggah Foto"}
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                   </label>
                   {imageUrl && (
@@ -239,7 +239,7 @@ export default function SafetyRulesAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Rule Name (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nama Aturan (Bahasa Inggris)</label>
               <input
                 type="text"
                 value={titleEn}
@@ -262,7 +262,7 @@ export default function SafetyRulesAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Rule Description (EN)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Deskripsi Aturan (Bahasa Inggris)</label>
               <textarea
                 rows={3}
                 value={descEn}

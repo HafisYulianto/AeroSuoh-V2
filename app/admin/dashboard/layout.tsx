@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import NextImage from "next/image";
 import AdminModal, { ModalState } from "../../../components/admin/AdminModal";
+import AdminAssistant from "../../../components/admin/AdminAssistant";
 
 export default function AdminDashboardLayout({
   children,
@@ -106,25 +107,25 @@ export default function AdminDashboardLayout({
       <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-emerald-500" size={40} />
-          <p className="text-sm font-semibold tracking-wider text-slate-400">LOADING DASHBOARD...</p>
+          <p className="text-sm font-semibold tracking-wider text-slate-400">MEMUAT DASBOR...</p>
         </div>
       </div>
     );
   }
 
   const menuItems = [
-    { name: "Dashboard Overview", path: "/admin/dashboard", icon: LayoutDashboard },
-    { name: "Site Settings", path: "/admin/dashboard/site-settings", icon: Settings },
-    { name: "Pesona Suoh (Gallery)", path: "/admin/dashboard/gallery", icon: Image },
-    { name: "Safety Guide", path: "/admin/dashboard/safety", icon: ShieldAlert },
+    { name: "Ringkasan Dasbor", path: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "Pengaturan Situs", path: "/admin/dashboard/site-settings", icon: Settings },
+    { name: "Pesona Suoh (Galeri)", path: "/admin/dashboard/gallery", icon: Image },
+    { name: "Panduan Keselamatan", path: "/admin/dashboard/safety", icon: ShieldAlert },
     { name: "Kisah & Pengetahuan", path: "/admin/dashboard/encyclopedia", icon: BookOpen },
     { name: "Rute Akses", path: "/admin/dashboard/routes", icon: Map },
-    { name: "Sensor Dashboard", path: "/admin/dashboard/sensor", icon: Activity },
+    { name: "Dasbor Sensor", path: "/admin/dashboard/sensor", icon: Activity },
     { name: "Ulasan Pengunjung", path: "/admin/dashboard/testimonials", icon: MessageSquare },
     { name: "Reservasi Tiket", path: "/admin/dashboard/bookings", icon: Ticket },
     // Hanya tampil untuk super_admin
     ...(profile?.role === "super_admin" 
-      ? [{ name: "Admin Management", path: "/admin/dashboard/users", icon: Users }] 
+      ? [{ name: "Manajemen Admin", path: "/admin/dashboard/users", icon: Users }] 
       : []
     ),
   ];
@@ -199,7 +200,7 @@ export default function AdminDashboardLayout({
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-600 transition-all cursor-pointer"
           >
             <LogOut size={14} />
-            <span>Logout Account</span>
+            <span>Keluar Akun</span>
           </button>
         </div>
       </aside>
@@ -219,6 +220,9 @@ export default function AdminDashboardLayout({
 
       {/* Modern Modal Dialog for Admin Actions */}
       <AdminModal {...modal} />
+
+      {/* Chatbot Khusus Admin Panel (PanduBot) */}
+      <AdminAssistant />
     </div>
   );
 }

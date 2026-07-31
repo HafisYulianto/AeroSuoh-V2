@@ -219,7 +219,7 @@ export default function SensorAdmin() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Gas Status (English)</label>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Status Gas (Bahasa Inggris)</label>
             <input
               type="text"
               value={h2sStatusEn}
@@ -240,7 +240,7 @@ export default function SensorAdmin() {
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Acidity Status (English)</label>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Status Keasaman (Bahasa Inggris)</label>
             <input
               type="text"
               value={phStatusEn}

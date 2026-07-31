@@ -225,7 +225,7 @@ export default function UserManagementAdmin() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Password Akun</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi Akun</label>
               <input
                 type="password"
                 value={password}
@@ -237,7 +237,7 @@ export default function UserManagementAdmin() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Hak Akses (Role)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Hak Akses (Peran)</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -285,7 +285,7 @@ export default function UserManagementAdmin() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   <th className="p-6">Administrator</th>
                   <th className="p-6">Email</th>
-                  <th className="p-6">Role</th>
+                  <th className="p-6">Peran</th>
                   <th className="p-6">Terdaftar Pada</th>
                   <th className="p-6 text-right">Aksi</th>
                 </tr>

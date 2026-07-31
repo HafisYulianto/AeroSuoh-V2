@@ -132,7 +132,7 @@ export default function DashboardOverview() {
     <div className="space-y-8">
       {/* Welcome Title */}
       <div>
-        <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Overview Dashboard</h2>
+        <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Ringkasan Dasbor</h2>
         <p className="text-sm text-slate-500 mt-1">Status dan ringkasan aktivitas sistem pariwisata AeroSuoh.</p>
       </div>
 

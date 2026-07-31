@@ -149,7 +149,7 @@ export default function EncyclopediaAdmin() {
                 <div className="flex gap-2">
                   <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold cursor-pointer">
                     <Upload size={14} />
-                    {uploadingId === item.id ? "Uploading..." : "Upload Cover Foto"}
+                    {uploadingId === item.id ? "Mengunggah..." : "Unggah Foto Sampul"}
                     <input 
                       type="file" 
                       accept="image/*" 
@@ -210,7 +210,7 @@ export default function EncyclopediaAdmin() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Title (English)</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Judul (Bahasa Inggris)</label>
                     <input
                       type="text"
                       value={item.title_en}
@@ -231,7 +231,7 @@ export default function EncyclopediaAdmin() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Content (English)</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Konten (Bahasa Inggris)</label>
                     <textarea
                       rows={4}
                       value={item.content_en}

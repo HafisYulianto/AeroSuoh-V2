@@ -267,7 +267,7 @@ export default function GalleryAdmin() {
               <div className="space-y-2">
                 <label className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold tracking-wider cursor-pointer">
                   <Upload size={14} />
-                  {uploading ? "Uploading..." : "Upload Foto"}
+                  {uploading ? "Mengunggah..." : "Unggah Foto"}
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
                 <p className="text-[10px] text-slate-400">Pilih gambar dengan resolusi baik berformat JPG/PNG.</p>
@@ -289,7 +289,7 @@ export default function GalleryAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Spot Name (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nama Spot (Bahasa Inggris)</label>
               <input
                 type="text"
                 value={titleEn}
@@ -313,7 +313,7 @@ export default function GalleryAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tourism Type (EN)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tipe Wisata (Bahasa Inggris)</label>
               <input
                 type="text"
                 value={typeEn}
@@ -336,7 +336,7 @@ export default function GalleryAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Brief Description (EN)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Deskripsi Singkat (Bahasa Inggris)</label>
               <textarea
                 rows={3}
                 value={descEn}
@@ -357,7 +357,7 @@ export default function GalleryAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Full History (EN)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Sejarah Lengkap (Bahasa Inggris)</label>
               <textarea
                 rows={4}
                 value={histEn}
@@ -377,7 +377,7 @@ export default function GalleryAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Local Myth (EN)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Mitos Lokal (Bahasa Inggris)</label>
               <textarea
                 rows={4}
                 value={mitosEn}
@@ -460,7 +460,7 @@ export default function GalleryAdmin() {
                   {item.image_url ? (
                     <Image src={item.image_url} alt={item.title_id} fill className="object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400 font-semibold text-xs">No Photo</div>
+                    <div className="w-full h-full flex items-center justify-center text-slate-400 font-semibold text-xs">Belum Ada Foto</div>
                   )}
                   <span className="absolute top-4 left-4 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-600/90 backdrop-blur-md text-white rounded-full">
                     {item.type_id}
@@ -470,10 +470,10 @@ export default function GalleryAdmin() {
                 <div className="p-6 space-y-2">
                   <div className="flex justify-between items-center">
                     <h3 className="font-bold text-slate-800 text-lg">{item.title_id}</h3>
-                    <span className="text-xs font-mono font-bold text-slate-400">Order: {item.sort_order}</span>
+                    <span className="text-xs font-mono font-bold text-slate-400">Urutan: {item.sort_order}</span>
                   </div>
                   <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">{item.desc_id}</p>
-                  <p className="text-[10px] text-slate-400 font-mono">Coords: {item.lat}, {item.lng}</p>
+                  <p className="text-[10px] text-slate-400 font-mono">Koordinat: {item.lat}, {item.lng}</p>
                 </div>
               </div>
 

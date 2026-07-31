@@ -157,7 +157,7 @@ export default function SiteSettingsAdmin() {
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold tracking-wider cursor-pointer shadow-md shadow-slate-900/10">
                   <Upload size={14} />
-                  {uploading ? "Uploading..." : "Upload Foto Baru"}
+                  {uploading ? "Mengunggah..." : "Unggah Foto Baru"}
                   <input 
                     type="file" 
                     accept="image/*"
@@ -192,7 +192,7 @@ export default function SiteSettingsAdmin() {
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold tracking-wider cursor-pointer shadow-md shadow-slate-900/10">
                   <Upload size={14} />
-                  {uploading ? "Uploading..." : "Upload Logo Baru"}
+                  {uploading ? "Mengunggah..." : "Unggah Logo Baru"}
                   <input 
                     type="file" 
                     accept="image/*"
@@ -222,7 +222,7 @@ export default function SiteSettingsAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Line 1 (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Baris 1 (Bahasa Inggris)</label>
               <input 
                 type="text" 
                 value={settings.hero_title_1_en || ""}
@@ -243,7 +243,7 @@ export default function SiteSettingsAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Line 2 (English - Gradient)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Baris 2 (Bahasa Inggris - Gradasi)</label>
               <input 
                 type="text" 
                 value={settings.hero_title_2_en || ""}
@@ -271,7 +271,7 @@ export default function SiteSettingsAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Description (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Deskripsi (Bahasa Inggris)</label>
               <textarea 
                 rows={3}
                 value={settings.hero_desc_en || ""}
@@ -299,7 +299,7 @@ export default function SiteSettingsAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Button 1 (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tombol 1 (Bahasa Inggris)</label>
               <input 
                 type="text" 
                 value={settings.hero_btn_1_en || ""}
@@ -320,7 +320,7 @@ export default function SiteSettingsAdmin() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Button 2 (English)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Tombol 2 (Bahasa Inggris)</label>
               <input 
                 type="text" 
                 value={settings.hero_btn_2_en || ""}

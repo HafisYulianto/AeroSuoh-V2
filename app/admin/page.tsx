@@ -81,7 +81,7 @@ export default function AdminLogin() {
           </div>
           <h2 className="text-2xl font-black text-white tracking-wide">AeroSuoh Admin</h2>
           <p className="text-xs text-emerald-300 font-bold uppercase tracking-widest mt-1">
-            Sign in to manage portal
+            Masuk untuk mengelola portal
           </p>
         </div>
 
@@ -94,7 +94,7 @@ export default function AdminLogin() {
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-              Email Address
+              Alamat Email
             </label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400" size={18} />
@@ -111,7 +111,7 @@ export default function AdminLogin() {
 
           <div>
             <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-              Password
+              Kata Sandi
             </label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400" size={18} />
@@ -141,17 +141,17 @@ export default function AdminLogin() {
             {loading ? (
               <>
                 <Loader2 className="animate-spin" size={18} />
-                <span>Signing in...</span>
+                <span>Memproses...</span>
               </>
             ) : (
-              <span>Login System</span>
+              <span>Masuk Sistem</span>
             )}
           </button>
         </form>
       </div>
 
       <p className="text-slate-500 text-xs mt-8">
-        © 2026 AeroSuoh. Protected Area.
+        © 2026 AeroSuoh. Area Terlindungi.
       </p>
     </div>
   );
