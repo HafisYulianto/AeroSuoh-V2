@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { MapPin, Mail, Phone, Home, Map, Activity, Camera, ShieldAlert, Info, Instagram, Youtube, Linkedin, Github, Award } from "lucide-react";
+import { MapPin, Mail, Phone, Home, Map, Activity, Camera, ShieldAlert, Info, Instagram, Youtube, Linkedin, Github } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 export default function Footer() {
@@ -46,11 +46,6 @@ export default function Footer() {
               <li>
                 <a href="#about" className="flex items-center gap-2 text-sm hover:text-white hover:translate-x-1 transition-transform">
                   <Info size={16} className="text-emerald-500" /> {t("nav_about")}
-                </a>
-              </li>
-              <li>
-                <a href="#logo-philosophy" className="flex items-center gap-2 text-sm hover:text-white hover:translate-x-1 transition-transform">
-                  <Award size={16} className="text-emerald-500" /> {t("foot_nav_logo" as any)}
                 </a>
               </li>
               <li>
