@@ -2,17 +2,35 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { Users, UserPlus, Shield, Trash2, Mail, Lock, User, CheckCircle, Loader2, X, Plus, Save, Key } from "lucide-react";
+import { 
+  Users, 
+  Trash2, 
+  Edit2, 
+  X, 
+  Plus, 
+  Save, 
+  Key, 
+  Eye, 
+  EyeOff, 
+  CheckCircle, 
+  Loader2, 
+  ShieldAlert,
+  Lock
+} from "lucide-react";
 import AdminModal, { ModalState } from "../../../../components/admin/AdminModal";
 
 export default function UserManagementAdmin() {
-  const [profiles, setProfiles] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingUser, setEditingUser] = useState<any | null>(null);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // Map untuk toggle password per baris (id -> boolean)
+  const [showPasswordMap, setShowPasswordMap] = useState<Record<string, boolean>>({});
 
   // Custom Modal State
   const [modal, setModal] = useState<ModalState>({
@@ -29,15 +47,22 @@ export default function UserManagementAdmin() {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("admin");
 
-  const loadProfiles = async () => {
+  const loadUsers = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      if (data) setProfiles(data);
+      const res = await fetch("/api/admin/users");
+      const result = await res.json();
+      if (res.ok && result.users) {
+        setUsers(result.users);
+      } else {
+        // Fallback: baca dari supabase profiles langsung
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        if (data) setUsers(data);
+      }
     } catch (err) {
       console.error("Gagal memuat profil admin:", err);
     } finally {
@@ -46,40 +71,78 @@ export default function UserManagementAdmin() {
   };
 
   useEffect(() => {
-    loadProfiles();
+    loadUsers();
   }, []);
 
-  const handleCreateUser = async (e: React.FormEvent) => {
+  const togglePasswordVisibility = (id: string) => {
+    setShowPasswordMap((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleOpenAddForm = () => {
+    setEditingUser(null);
+    setEmail("");
+    setPassword("");
+    setFullName("");
+    setRole("admin");
+    setErrorMsg("");
+    setShowForm(true);
+  };
+
+  const handleOpenEditForm = (user: any) => {
+    setEditingUser(user);
+    setEmail(user.email || "");
+    setPassword(""); // Kosongkan agar opsional
+    setFullName(user.full_name || "");
+    setRole(user.role || "admin");
+    setErrorMsg("");
+    setShowForm(true);
+  };
+
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setStatus("idle");
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/admin/create-user", {
-        method: "POST",
+      const isEdit = !!editingUser;
+      const url = "/api/admin/users";
+      const method = isEdit ? "PUT" : "POST";
+      const payload: any = {
+        email,
+        fullName,
+        role,
+      };
+
+      if (isEdit) {
+        payload.id = editingUser.id;
+        if (password.trim() !== "") {
+          payload.password = password;
+        }
+      } else {
+        payload.password = password;
+      }
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, fullName, role }),
+        body: JSON.stringify(payload),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        throw new Error(result.error || "Gagal membuat user.");
+        throw new Error(result.error || `Gagal ${isEdit ? "memperbarui" : "membuat"} admin.`);
       }
 
       setStatus("success");
-      setEmail("");
-      setPassword("");
-      setFullName("");
-      setRole("admin");
       setShowForm(false);
-      loadProfiles();
-      
+      loadUsers();
+
       setTimeout(() => setStatus("idle"), 4000);
     } catch (err: any) {
-      console.error("Gagal membuat admin baru:", err);
-      setErrorMsg(err.message || "Gagal membuat admin baru.");
+      console.error("Gagal menyimpan akun admin:", err);
+      setErrorMsg(err.message || "Gagal menyimpan akun admin.");
       setStatus("error");
     } finally {
       setSaving(false);
@@ -117,13 +180,16 @@ export default function UserManagementAdmin() {
     closeModal();
     setDeletingId(id);
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", id);
-      
-      if (error) throw error;
-      loadProfiles();
+      const res = await fetch(`/api/admin/users?id=${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result.error || "Gagal menghapus user.");
+      }
+
+      loadUsers();
     } catch (err) {
       console.error("Gagal menghapus administrator:", err);
       setModal({
@@ -139,7 +205,6 @@ export default function UserManagementAdmin() {
       setDeletingId(null);
     }
   };
-
 
   if (loading && !showForm) {
     return (
@@ -157,11 +222,13 @@ export default function UserManagementAdmin() {
             <Users size={28} className="text-slate-600" />
             Kelola Akun Administrator
           </h2>
-          <p className="text-sm text-slate-500 mt-1">Daftar pengguna yang memiliki akses untuk mengelola portal AeroSuoh.</p>
+          <p className="text-sm text-slate-500 mt-1">
+            Pengelolaan penuh (CRUD) dan visibilitas password akun Admin CMS & Super Admin AeroSuoh.
+          </p>
         </div>
         {!showForm && (
           <button
-            onClick={() => setShowForm(true)}
+            onClick={handleOpenAddForm}
             className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-emerald-600/10 cursor-pointer"
           >
             <Plus size={18} />
@@ -173,16 +240,19 @@ export default function UserManagementAdmin() {
       {status === "success" && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-2 font-semibold text-sm animate-in fade-in">
           <CheckCircle className="text-emerald-600 shrink-0" />
-          <span>Akun administrator baru berhasil dibuat!</span>
+          <span>Data administrator berhasil diperbarui/disimpan!</span>
         </div>
       )}
 
       {showForm ? (
-        <form onSubmit={handleCreateUser} className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-6 max-w-xl animate-in fade-in duration-200">
+        <form
+          onSubmit={handleSubmitForm}
+          className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 space-y-6 max-w-xl animate-in fade-in duration-200"
+        >
           <div className="flex justify-between items-center border-b border-slate-100 pb-4">
             <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
               <Key size={18} className="text-emerald-600" />
-              Buat Akun Administrator Baru
+              {editingUser ? `Edit Akun: ${editingUser.full_name || editingUser.email}` : "Buat Akun Administrator Baru"}
             </h3>
             <button
               type="button"
@@ -201,7 +271,9 @@ export default function UserManagementAdmin() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nama Lengkap</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                Nama Lengkap
+              </label>
               <input
                 type="text"
                 value={fullName}
@@ -213,7 +285,9 @@ export default function UserManagementAdmin() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Alamat Email</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                Alamat Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -225,25 +299,29 @@ export default function UserManagementAdmin() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kata Sandi Akun</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                {editingUser ? "Kata Sandi Baru (Opsional)" : "Kata Sandi Akun"}
+              </label>
               <input
-                type="password"
+                type="text"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Minimal 6 karakter"
+                required={!editingUser}
+                placeholder={editingUser ? "Kosongkan jika tidak ingin mengubah password" : "Minimal 6 karakter"}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Hak Akses (Peran)</label>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">
+                Hak Akses (Peran)
+              </label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium"
               >
-                <option value="admin">Admin Standar (Konten & Monitoring)</option>
+                <option value="admin">Admin CMS (Konten & Monitoring)</option>
                 <option value="super_admin">Super Admin (Konten, Monitoring & Kelola User)</option>
               </select>
             </div>
@@ -265,12 +343,12 @@ export default function UserManagementAdmin() {
               {saving ? (
                 <>
                   <Loader2 className="animate-spin" size={14} />
-                  <span>Mendaftarkan...</span>
+                  <span>Menyimpan...</span>
                 </>
               ) : (
                 <>
                   <Save size={14} />
-                  <span>Daftarkan Akun</span>
+                  <span>{editingUser ? "Simpan Perubahan" : "Daftarkan Akun"}</span>
                 </>
               )}
             </button>
@@ -285,38 +363,90 @@ export default function UserManagementAdmin() {
                 <tr className="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
                   <th className="p-6">Administrator</th>
                   <th className="p-6">Email</th>
+                  <th className="p-6">Password</th>
                   <th className="p-6">Peran</th>
                   <th className="p-6">Terdaftar Pada</th>
                   <th className="p-6 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
-                {profiles.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/30 transition-colors">
-                    <td className="p-6 font-bold text-slate-800">{p.full_name || "Admin"}</td>
-                    <td className="p-6 text-slate-600 font-mono">{p.email}</td>
-                    <td className="p-6">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        p.role === "super_admin"
-                          ? "bg-purple-100 text-purple-800"
-                          : "bg-emerald-100 text-emerald-800"
-                      }`}>
-                        {p.role}
-                      </span>
-                    </td>
-                    <td className="p-6 text-slate-500">{new Date(p.created_at).toLocaleDateString("id-ID")}</td>
-                    <td className="p-6 text-right">
-                      <button
-                        onClick={() => confirmDeleteUser(p.id, p.full_name || p.email)}
-                        disabled={deletingId === p.id}
-                        className="p-1.5 hover:bg-rose-50 text-rose-600 border border-transparent hover:border-rose-100 rounded-lg transition-colors cursor-pointer"
-                        title="Hapus Administrator"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center font-semibold text-slate-400">
+                      Belum ada data administrator.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  users.map((u) => {
+                    const isVisible = !!showPasswordMap[u.id];
+                    const passText = u.raw_password || "••••••••";
+                    return (
+                      <tr key={u.id} className="hover:bg-slate-50/30 transition-colors">
+                        {/* Name */}
+                        <td className="p-6 font-bold text-slate-800">{u.full_name || "Admin"}</td>
+
+                        {/* Email */}
+                        <td className="p-6 text-slate-600 font-mono">{u.email}</td>
+
+                        {/* Password with Eye Toggle */}
+                        <td className="p-6 font-mono">
+                          <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 w-fit">
+                            <span className="text-xs font-bold text-slate-700 min-w-[80px]">
+                              {isVisible ? passText : "••••••••"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => togglePasswordVisibility(u.id)}
+                              className="text-slate-400 hover:text-emerald-600 transition-colors cursor-pointer"
+                              title={isVisible ? "Sembunyikan Password" : "Lihat Password"}
+                            >
+                              {isVisible ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* Role Badge */}
+                        <td className="p-6">
+                          <span
+                            className={`inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                              u.role === "super_admin"
+                                ? "bg-purple-100 text-purple-800 border border-purple-200"
+                                : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                            }`}
+                          >
+                            {u.role === "super_admin" ? "SUPER_ADMIN" : "ADMIN_CMS"}
+                          </span>
+                        </td>
+
+                        {/* Created Date */}
+                        <td className="p-6 text-slate-500 font-medium text-xs">
+                          {new Date(u.created_at).toLocaleDateString("id-ID")}
+                        </td>
+
+                        {/* Actions: Edit & Delete */}
+                        <td className="p-6 text-right">
+                          <div className="flex items-center gap-2 justify-end">
+                            <button
+                              onClick={() => handleOpenEditForm(u)}
+                              className="p-1.5 bg-slate-50 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 border border-slate-200 hover:border-emerald-200 rounded-lg transition-all cursor-pointer"
+                              title="Edit Administrator"
+                            >
+                              <Edit2 size={15} />
+                            </button>
+                            <button
+                              onClick={() => confirmDeleteUser(u.id, u.full_name || u.email)}
+                              disabled={deletingId === u.id}
+                              className="p-1.5 bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200 hover:border-rose-200 rounded-lg transition-all cursor-pointer"
+                              title="Hapus Administrator"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
@@ -328,4 +458,3 @@ export default function UserManagementAdmin() {
     </div>
   );
 }
-
