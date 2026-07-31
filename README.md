@@ -34,14 +34,21 @@ Dibuat untuk **Kompetisi Web Development HMJTI POLINELA 2026**.
 - **Panduan Keselamatan** — Protokol lengkap: masker gas, sepatu trekking, pendampingan pemandu, dan zona aman.
 - **Unduh Laporan PDF** — Ekspor data sensor sebagai laporan PDF untuk keperluan dokumentasi.
 
-### 🤖 Interaksi Cerdas
-- **AeroBot Smart Assistant** — Chatbot AI interaktif untuk reservasi tiket, rute, cuaca, outfit, dan protokol keselamatan.
+### 🤖 Interaksi Cerdas & Dual Chatbot System
+- **AeroBot Smart Assistant (Pengunjung)** — Chatbot AI bilingual (ID/EN) interaktif yang mencakup **33+ topik pertanyaan** dan **19 Quick Chips** interaktif (tiket, rute, cuaca, homestay, drone, pakaian, dll.). AeroBot secara otomatis menyelaraskan bahasa sesuai tombol ID/EN di Navbar.
+- **PanduBot Admin Assistant (Pengelola)** — Chatbot panduan khusus di area Admin Panel yang memberikan petunjuk langkah demi langkah pengoperasian 10 fitur Admin Panel dalam Bahasa Indonesia.
 - **Sistem Pemesanan Tiket Digital** — Formulir booking multi-step (Day Trip Pass & Eco-Staycation) dengan validasi, katalog homestay, QRIS, dan konfirmasi via WhatsApp.
 - **Testimoni Pengunjung** — Sistem ulasan dengan rating bintang dan moderasi admin.
 
-### 🌐 Platform & Aksesibilitas
-- **Bilingual Seamless (ID / EN)** — Dukungan penuh Bahasa Indonesia dan Bahasa Inggris secara instan tanpa reload (174 kunci terjemahan tersinkronisasi).
-- **Admin Panel (CMS)** — Panel administrasi lengkap untuk mengelola galeri, data sensor, pemesanan, testimoni, ensiklopedia, rute akses, pengaturan situs, dan manajemen pengguna — tanpa perlu coding.
+### 👑 Admin Panel & Manajemen Pengguna (CMS)
+- **100% Bahasa Indonesia** — Seluruh antarmuka Admin Panel disesuaikan penuh ke Bahasa Indonesia agar ramah digunakan oleh warga lokal (Warlok) pengelola kawasan Suoh.
+- **Super Admin Full CRUD** — Pengelolaan akun administrator lengkap (Create, Read, Update/Edit, Delete) untuk dua tingkat peran: `SUPER_ADMIN` dan `ADMIN_CMS`.
+- **Fitur Visibilitas Password (Eye Toggle 👁️/🙈)** — Super Admin dapat mengintip dan menyembunyikan password asli akun admin secara aman langsung pada tabel manajemen pengguna.
+- **Modul Pengelolaan Terpadu** — Pengaturan teks hero & logo, galeri spot wisata, aturan keselamatan, artikel ensiklopedia, rute akses, input data sensor & grafik, moderasi ulasan, dan konfirmasi reservasi tiket.
+
+### 🌐 Platform, Presisi Layout & Aksesibilitas
+- **Bilingual Seamless (ID / EN)** — Dukungan penuh Bahasa Indonesia dan Bahasa Inggris secara instan tanpa reload (174+ kunci terjemahan tersinkronisasi).
+- **Optical Baseline Alignment** — Offset navigasi mikro (`-translate-y-1`) pada grup tombol kanan Navbar untuk presisi kesejajaran 100% dengan menu utama.
 - **Responsive & Premium Design** — Glassmorphism, partikel uap geotermal animasi, scroll reveal (Framer Motion), dan error boundary global.
 - **SEO Terintegrasi** — OpenGraph, Twitter Card, `sitemap.xml`, `robots.txt`, Google Search Console verification, dan custom 404 page.
 
@@ -94,21 +101,21 @@ AeroSuoh-V2/
 │   ├── robots.ts                 # Dynamic Robots.txt Generator
 │   ├── sitemap.ts                # Dynamic Sitemap.xml Generator
 │   ├── admin/                    # Admin Panel (CMS)
-│   │   ├── page.tsx              # Login Admin
+│   │   ├── page.tsx              # Login Admin (Bahasa Indonesia)
 │   │   └── dashboard/            # Dashboard Admin
-│   │       ├── page.tsx          # Overview & Statistik
-│   │       ├── layout.tsx        # Layout Sidebar Admin
+│   │       ├── page.tsx          # Overview & Statistik Ringkasan Dasbor
+│   │       ├── layout.tsx        # Layout Sidebar & PanduBot Integration
 │   │       ├── bookings/         # Manajemen Pemesanan Tiket
 │   │       ├── encyclopedia/     # Manajemen Ensiklopedia
 │   │       ├── gallery/          # Manajemen Galeri Foto
 │   │       ├── routes/           # Manajemen Rute Akses
 │   │       ├── safety/           # Manajemen Panduan Keselamatan
 │   │       ├── sensor/           # Manajemen Data Sensor
-│   │       ├── site-settings/    # Pengaturan Website
-│   │       ├── testimonials/     # Moderasi Testimoni
-│   │       └── users/            # Manajemen Pengguna
-│   └── api/admin/                # API Routes (Server-side)
-├── components/                   # 17 Komponen UI Interaktif
+│   │       ├── site-settings/    # Pengaturan Website & Teks Hero
+│   │       ├── testimonials/     # Moderasi Testimoni Pengunjung
+│   │       └── users/            # Super Admin Full CRUD & Password Toggle
+│   └── api/admin/                # API Routes (Server-side Users & Auth Management)
+├── components/                   # Komponen UI Interaktif
 │   ├── About.tsx                 # Tentang & SDGs
 │   ├── AerialExplorer.tsx        # Peta 3D Mapbox GL
 │   ├── BackToTop.tsx             # Scroll to Top
@@ -118,17 +125,19 @@ AeroSuoh-V2/
 │   ├── GeothermalParticles.tsx   # Efek Partikel Uap
 │   ├── ItineraryPlanner.tsx      # Perencana Itinerari
 │   ├── LogoPhilosophy.tsx        # Filosofi Logo
-│   ├── Navbar.tsx                # Navigasi Responsif & Switcher Bahasa
+│   ├── Navbar.tsx                # Navigasi Presisi Alignment & Switcher Bahasa
 │   ├── PhotoSlider.tsx           # Galeri Foto HD
 │   ├── RouteAccess.tsx           # Rute Transportasi
 │   ├── SafetyAlert.tsx           # Banner Peringatan Dini
 │   ├── SafetyGuide.tsx           # Panduan Keselamatan
-│   ├── SmartAssistant.tsx        # AeroBot AI & Booking System
+│   ├── SmartAssistant.tsx        # AeroBot AI (33+ Topik & 19 Quick Chips)
 │   ├── Testimonials.tsx          # Ulasan Pengunjung
 │   ├── VirtualTour.tsx           # Video Showcase
-│   └── admin/                    # Komponen Admin Panel
+│   └── admin/                    # Komponen Khusus Admin Panel
+│       ├── AdminAssistant.tsx    # PanduBot Chatbot Asisten Admin
+│       └── AdminModal.tsx        # Modal Dialog Konfirmasi Admin
 ├── context/
-│   └── LanguageContext.tsx        # Global State & Kamus Terjemahan (174 key × 2 bahasa)
+│   └── LanguageContext.tsx        # Global State & Kamus Terjemahan (Bilingual ID/EN)
 ├── lib/
 │   ├── supabase.ts               # Supabase Client
 │   └── types.ts                  # TypeScript Type Definitions
@@ -168,6 +177,7 @@ AeroSuoh-V2/
    NEXT_PUBLIC_MAPBOX_TOKEN=pk.your_mapbox_public_token_here
    NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
    ```
 
 4. **Setup Database (Opsional)**
@@ -197,7 +207,7 @@ AeroSuoh-V2/
 
 ## 🌐 Dukungan Bilingual (ID / EN)
 
-AeroSuoh mendukung **174 kunci terjemahan** yang tersinkronisasi sempurna antara Bahasa Indonesia dan Bahasa Inggris. Sistem terjemahan dikelola melalui:
+AeroSuoh mendukung terjemahan yang tersinkronisasi sempurna antara Bahasa Indonesia dan Bahasa Inggris. Sistem terjemahan dikelola melalui:
 
 - **`context/LanguageContext.tsx`** — Global state management dengan React Context API
 - **Zero Reload** — Pergantian bahasa instan tanpa memuat ulang halaman
