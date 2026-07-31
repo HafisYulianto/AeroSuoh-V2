@@ -50,32 +50,44 @@ export default function SmartAssistant() {
   }, [lang]);
 
   const quickChips = lang === "ID" ? [
-    { label: "🎫 Tiket & Harga", query: "tiket" },
+    { label: "🎫 Tiket & Biaya", query: "tiket" },
     { label: "🌤️ Cuaca & Suhu", query: "cuaca" },
-    { label: "🏡 Homestay", query: "homestay" },
-    { label: "📍 Rute & Akses", query: "rute" },
+    { label: "🏡 Homestay & Cabin", query: "homestay" },
+    { label: "📍 Rute & Jalan", query: "rute" },
     { label: "🛡️ Keamanan Gas", query: "keamanan" },
-    { label: "🌋 Spot Wisata", query: "danau" },
+    { label: "🌋 6 Spot Wisata", query: "danau" },
     { label: "☕ Kuliner & Kopi", query: "kuliner" },
-    { label: "🎒 Outfit & Sepatu", query: "pakaian" },
+    { label: "🎒 Pakaian & Sepatu", query: "pakaian" },
     { label: "⛺ Camping & Foto", query: "aktivitas" },
     { label: "🚙 Ojek & Parkir", query: "kendaraan" },
     { label: "📱 Sinyal Internet", query: "sinyal" },
     { label: "📜 Sejarah & Mitos", query: "sejarah" },
+    { label: "🕌 Toilet & Musholla", query: "toilet" },
+    { label: "📸 Drone & Cas Listrik", query: "drone" },
+    { label: "🌿 Flora & Anggrek", query: "flora" },
+    { label: "🛍️ Oleh-oleh & Souvenir", query: "souvenir" },
+    { label: "🩺 P3K & Kesehatan", query: "kesehatan" },
+    { label: "👥 Bus & Rombongan", query: "rombongan" },
     { label: "📞 Kontak Admin", query: "kontak" },
   ] : [
-    { label: "🎫 Tickets & Price", query: "ticket" },
+    { label: "🎫 Tickets & Fees", query: "ticket" },
     { label: "🌤️ Weather & Temp", query: "weather" },
-    { label: "🏡 Homestays", query: "homestay" },
+    { label: "🏡 Homestays & Cabins", query: "homestay" },
     { label: "📍 Routes & Maps", query: "route" },
     { label: "🛡️ Safety & Gas", query: "safe" },
-    { label: "🌋 Attractions", query: "lake" },
+    { label: "🌋 6 Attractions", query: "lake" },
     { label: "☕ Food & Coffee", query: "food" },
     { label: "🎒 Outfit & Shoes", query: "clothes" },
-    { label: "⛺ Camping & Drones", query: "activity" },
+    { label: "⛺ Camping & Activities", query: "activity" },
     { label: "🚙 Bikes & Parking", query: "transport" },
     { label: "📱 Signal & Wifi", query: "signal" },
-    { label: "📜 History & Myths", query: "history" },
+    { label: "📜 History & Lore", query: "history" },
+    { label: "🕌 Toilets & Prayer", query: "toilet" },
+    { label: "📸 Drones & Charging", query: "drone" },
+    { label: "🌿 Flora & Orchids", query: "flora" },
+    { label: "🛍️ Souvenirs & Gifts", query: "souvenir" },
+    { label: "🩺 First Aid & Medical", query: "health" },
+    { label: "👥 Buses & Groups", query: "bus" },
     { label: "📞 Admin Contact", query: "contact" },
   ];
 
@@ -108,20 +120,47 @@ export default function SmartAssistant() {
         else if (inputLower.includes("danau") || inputLower.includes("kawah") || inputLower.includes("wisata") || inputLower.includes("tempat") || inputLower.includes("destinasi") || inputLower.includes("spot") || inputLower.includes("bagus") || inputLower.includes("obyek")) {
           botReply = "🌋 **6 Spot Utama Geotermal Suoh:**\n\n1. **Danau Asam** - Danau vulkanik eksotis bersuhu hangat & asam.\n2. **Danau Lebar** - Danau air tawar terluas, pusat perahu & mancing.\n3. **Danau Minyak** - Air berkilau unik seperti lapisan minyak.\n4. **Pasir Kuning** - Padang endapan belerang mengkristal.\n5. **Kawah Nirwana** - Letupan lumpur panas mendidih hingga 100°C.\n6. **Kawah Keramikan** - Kerak silika mengeras mirip lantai keramik pecah.";
         } 
-        else if (inputLower.includes("cuaca") || inputLower.includes("suhu") || inputLower.includes("hujan") || inputLower.includes("pantau") || inputLower.includes("sensor") || inputLower.includes("panas") || inputLower.includes("dingin") || inputLower.includes("iklim")) {
-          botReply = "🌤️ **Kondisi Cuaca & Suhu:**\n\n• Suhu Udara Rata-rata: 20°C - 26°C (sejuk pegunungan).\n• Suhu Air Danau Asam: ~35°C - 45°C.\n• Suhu Permukaan Kawah: >90°C!\n\nAnda dapat mengecek grafik live cuaca, suhu air, dan kadar gas H₂S di menu *Dasbor Sensor* (Eco-Monitor) kami! 📊";
+        else if (inputLower.includes("cuaca") || inputLower.includes("suhu") || inputLower.includes("hujan") || inputLower.includes("pantau") || inputLower.includes("sensor") || inputLower.includes("panas") || inputLower.includes("dingin") || inputLower.includes("iklim") || inputLower.includes("musim")) {
+          botReply = "🌤️ **Kondisi Cuaca & Musim:**\n\n• Suhu Udara Rata-rata: 20°C - 26°C (sejuk pegunungan).\n• Suhu Air Danau Asam: ~35°C - 45°C.\n• Suhu Permukaan Kawah: >90°C!\n• **Musim Terbaik:** Mei - Oktober (Kemarau) untuk jalanan paling mulus & langit cerah.\n\nCek data grafik live cuaca & sensor di menu *Dasbor Sensor* (Eco-Monitor) kami! 📊";
         } 
         else if (inputLower.includes("sejarah") || inputLower.includes("mitos") || inputLower.includes("cerita") || inputLower.includes("asal usul") || inputLower.includes("gempa") || inputLower.includes("legenda") || inputLower.includes("naga")) {
           botReply = "📜 **Sejarah & Legenda Mistik Suoh:**\n\n• **Sejarah:** Kaldera Suoh terbentuk akibat gempa freatik dahsyat 7.5 SR pada 25 Juni 1933.\n• **Mitos Lokal:** Gemuruh kawah diyakini warga lokal sebagai dorongan napas Naga Penjaga Danau yang tertidur di bawah bumi. Dilarang melempar batu atau berkata kotor di area kawah!";
         } 
-        else if (inputLower.includes("ngapain") || inputLower.includes("aktivitas") || inputLower.includes("foto") || inputLower.includes("camping") || inputLower.includes("kemah") || inputLower.includes("mancing") || inputLower.includes("drone") || inputLower.includes("kegiatan") || inputLower.includes("healing")) {
+        else if (inputLower.includes("ngapain") || inputLower.includes("aktivitas") || inputLower.includes("foto") || inputLower.includes("camping") || inputLower.includes("kemah") || inputLower.includes("mancing") || inputLower.includes("kegiatan") || inputLower.includes("healing")) {
           botReply = "⛺ **Aktivitas Favorit Pengunjung:**\n\n1. **Camping di Danau Lebar** (spot sunrise & api unggun malam hari).\n2. **Fotografi & Drone** di Kawah Keramikan (lanskap ala planet Mars).\n3. **Keliling Danau Lebar** naik perahu dayung warga.\n4. **Memancing ikan endemik** & terapi santai air hangat alami.";
         } 
         else if (inputLower.includes("kendaraan") || inputLower.includes("mobil") || inputLower.includes("motor") || inputLower.includes("transportasi") || inputLower.includes("ojek") || inputLower.includes("parkir") || inputLower.includes("trail")) {
           botReply = "🚙 **Transportasi & Kendaraan:**\n\n• Mobil/Motor dapat parkir aman di Basecamp Utama.\n• Untuk menuju titik kawah Keramikan, sangat disarankan menyewa **Ojek Motor Trail Lokal** (~Rp 50.000 PP) yang mahir menembus rute tanah belerang!";
         } 
-        else if (inputLower.includes("makan") || inputLower.includes("minum") || inputLower.includes("kuliner") || inputLower.includes("warung") || inputLower.includes("restoran") || inputLower.includes("lapar") || inputLower.includes("kopi") || inputLower.includes("oleh-oleh")) {
-          botReply = "☕ **Kuliner & Kopi Khas Suoh:**\n\nNikmati santapan hangat di warung basecamp:\n• **Kopi Robusta Asli Lampung Barat** (aroma vulkanik khas petik merah).\n• Nasi Goreng Kampung, Mie Rebus Panas, & Ikan Bakar Danau Lebar.\n• Oleh-oleh bubuk kopi pilihan langsung dari petani lokal!";
+        else if (inputLower.includes("makan") || inputLower.includes("minum") || inputLower.includes("kuliner") || inputLower.includes("warung") || inputLower.includes("restoran") || inputLower.includes("lapar") || inputLower.includes("kopi")) {
+          botReply = "☕ **Kuliner & Kopi Khas Suoh:**\n\nNikmati santapan hangat di warung basecamp:\n• **Kopi Robusta Asli Lampung Barat** (aroma vulkanik khas petik merah).\n• Nasi Goreng Kampung, Mie Rebus Panas, & Ikan Bakar Danau Lebar.\n• Warung buka dari pagi hingga malam hari!";
+        }
+        else if (inputLower.includes("souvenir") || inputLower.includes("oleh-oleh") || inputLower.includes("kaos") || inputLower.includes("gantungan") || inputLower.includes("kerajinan") || inputLower.includes("cenderamata") || inputLower.includes("gift")) {
+          botReply = "🛍️ **Oleh-Oleh & Cenderamata Suoh:**\n\nAnda dapat membeli kenang-kenangan khas Suoh di Basecamp:\n1. **Biji Kopi Robusta Petik Merah** (Sangrai Asli Petani Suoh)\n2. **Kaos Wisata AeroSuoh** & Gantungan Kunci Kayu Ukir\n3. **Batu Belerang Hias & Anggrek Lokal** dalam pot ramah lingkungan.";
+        }
+        else if (inputLower.includes("toilet") || inputLower.includes("wc") || inputLower.includes("musholla") || inputLower.includes("masjid") || inputLower.includes("sholat") || inputLower.includes("wudhu") || inputLower.includes("kamar mandi") || inputLower.includes("fasilitas")) {
+          botReply = "🕌 **Fasilitas Umum (Toilet & Musholla):**\n\n• **Musholla Bersih:** Tersedia di Basecamp Danau Lebar lengkap dengan sarana wudhu & sajadah.\n• **Toilet & Kamar Mandi:** Tersedia di area parkir utama & homestay warga dengan pasokan air bersih pegunungan.";
+        }
+        else if (inputLower.includes("drone") || inputLower.includes("kamera") || inputLower.includes("permit") || inputLower.includes("izin") || inputLower.includes("cas") || inputLower.includes("listrik") || inputLower.includes("colokan") || inputLower.includes("stopkontak")) {
+          botReply = "📸 **Fotografi, Drone & Charging Listrik:**\n\n• **Izin Drone:** Menerbangkan drone di area Keramikan & Danau **GRATIS** dan sangat diperbolehkan!\n• **Pengisian Daya (Charging):** Colokan listrik gratis tersedia di Warung Basecamp & Homestay.";
+        }
+        else if (inputLower.includes("flora") || inputLower.includes("fauna") || inputLower.includes("anggrek") || inputLower.includes("bunga") || inputLower.includes("tanaman") || inputLower.includes("hewan") || inputLower.includes("burung") || inputLower.includes("satwa")) {
+          botReply = "🌿 **Flora & Fauna Endemik Suoh:**\n\n• **Anggrek Vulkanik:** Anggrek alam langka yang mampu tumbuh di tanah bersulfur.\n• **Satwa:** Burung liar endemik Sumatera & kawanan ikan air tawar di Danau Lebar. Sangat asri & terjaga!";
+        }
+        else if (inputLower.includes("renang") || inputLower.includes("berenang") || inputLower.includes("tenggelam") || inputLower.includes("mandi danau") || inputLower.includes("kecelup") || inputLower.includes("racun")) {
+          botReply = "⚠️ **Peringatan Berenang:**\n\n• **DILARANG KERAS BERENANG** di Danau Asam & Danau Minyak karena air mengandung asam sulfat pekat & kedalaman ekstrem.\n• Untuk terapi air hangat alami, gunakan fasilitas kolam rendam khusus di area Homestay!";
+        }
+        else if (inputLower.includes("kesehatan") || inputLower.includes("sakit") || inputLower.includes("obat") || inputLower.includes("p3k") || inputLower.includes("puskesmas") || inputLower.includes("klinik") || inputLower.includes("pusing") || inputLower.includes("mual") || inputLower.includes("medis")) {
+          botReply = "🩺 **Fasilitas Kesehatan & P3K:**\n\n• Kotak P3K standar tersedia di Basecamp Utama & Posko Pemandu.\n• Jika merasa pusing akibat bau belerang, segera menjauh ke area terbuka berangin & gunakan masker respirator.\n• Puskesmas Kecamatan Suoh berjarak hanya ±10 menit dari lokasi wisata.";
+        }
+        else if (inputLower.includes("rombongan") || inputLower.includes("bus") || inputLower.includes("pariwisata") || inputLower.includes("sekolah") || inputLower.includes("study tour") || inputLower.includes("grup")) {
+          botReply = "👥 **Kunjungan Rombongan & Bus Besar:**\n\n• Bus Pariwisata sedang/besar dapat parkir di Lapangan Basecamp Utama.\n• Untuk rombongan sekolah / instansi (>20 orang), harap hubungi Admin via WhatsApp untuk koordinasi pemandu tambahan & diskon khusus paket!";
+        }
+        else if (inputLower.includes("terapi") || inputLower.includes("gatal") || inputLower.includes("kulit") || inputLower.includes("pegal") || inputLower.includes("rematik") || inputLower.includes("mandi hangat")) {
+          botReply = "♨️ **Terapi Air Hangat Belerang:**\n\nKandungan sulfur alami di aliran hangat Suoh dipercaya secara turun-temurun membantu meredakan pegal Linu, terapi rematik, serta menyegarkan kulit. Cobalah fasilitas kolam rendam di Homestay lokal!";
+        }
+        else if (inputLower.includes("sdgs") || inputLower.includes("konservasi") || inputLower.includes("ekowisata") || inputLower.includes("kompetisi") || inputLower.includes("lomba") || inputLower.includes("lingkungan") || inputLower.includes("hijau")) {
+          botReply = "🌱 **Komitmen Ekoturisme & SDGs AeroSuoh:**\n\nAeroSuoh mendukung penuh SDGs PBB No. 8 (Ekonomi Berkelanjutan), No. 11 (Komunitas Tangguh), No. 13 (Aksi Iklim), & No. 15 (Ekosistem Darat) dengan teknologi pemantauan sensor transparan!";
         }
         else if (inputLower.includes("sinyal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("telkomsel") || inputLower.includes("jaringan") || inputLower.includes("blank")) {
           botReply = "📱 **Informasi Jaringan & Sinyal:**\n\n• Sinyal **Telkomsel** cukup stabil di area Basecamp & Homestay.\n• Di area kawah tengah terdapat titik *blank-spot* (sangat cocok untuk digital detox!).\n• Disarankan membawa Powerbank & mengunduh peta rute sebelum berangkat.";
@@ -145,10 +184,13 @@ export default function SmartAssistant() {
           botReply = "Sama-sama! 🙏 Senang bisa membantu Anda. Selamat merencanakan petualangan ke Suoh! Jangan lupa selalu utamakan keselamatan ya. ✨";
         }
         else {
-          botReply = "Maaf, AeroBot belum mengenali pertanyaan tersebut. 🙏 Silakan coba tombol pilihan topik cepat di atas atau gunakan kata kunci seperti 'Tiket', 'Homestay', 'Rute', 'Keamanan', 'Cuaca', 'Pakaian', atau 'Kuliner'.";
+          botReply = "Maaf, AeroBot belum mengenali pertanyaan tersebut. 🙏 Silakan coba tombol pilihan topik cepat di atas atau gunakan kata kunci seperti 'Tiket', 'Homestay', 'Rute', 'Keamanan', 'Cuaca', 'Pakaian', 'Toilet', 'Drone', atau 'Kuliner'.";
         }
       } 
       
+      // ==========================================
+      // Deteksi Kata Kunci (BAHASA INGGRIS - EXPANDED)
+      // ==========================================
       else {
         if (inputLower.includes("hello") || inputLower.includes("hi") || inputLower.includes("morning") || inputLower.includes("afternoon") || inputLower.includes("evening") || inputLower.includes("greetings")) {
           botReply = "Hello! I am AeroBot 🤖. How can I assist you today regarding Suoh's tourism, tickets, routes, or geothermal conditions? 👋";
@@ -171,20 +213,47 @@ export default function SmartAssistant() {
         else if (inputLower.includes("lake") || inputLower.includes("crater") || inputLower.includes("destination") || inputLower.includes("place") || inputLower.includes("spot") || inputLower.includes("best") || inputLower.includes("attraction")) {
           botReply = "🌋 **6 Main Suoh Attractions:**\n\n1. **Lake Asam** - Exotic acidic volcanic lake.\n2. **Lake Lebar** - Largest freshwater lake, boating & fishing hub.\n3. **Lake Minyak** - Unique oil-like glossy water surface.\n4. **Yellow Sand** - Crystallized sulfur fields.\n5. **Nirvana Crater** - Bubbling mud eruptions up to 100°C.\n6. **Keramikan Crater** - Hardened silica crust resembling broken ceramic tiles.";
         } 
-        else if (inputLower.includes("weather") || inputLower.includes("temperature") || inputLower.includes("temp") || inputLower.includes("rain") || inputLower.includes("monitor") || inputLower.includes("sensor") || inputLower.includes("hot") || inputLower.includes("cold") || inputLower.includes("climate")) {
-          botReply = "🌤️ **Weather & Temperature:**\n\n• Average Air Temp: 20°C - 26°C (cool mountain climate).\n• Lake Asam Water Temp: ~35°C - 45°C.\n• Crater Crust Surface Temp: >90°C!\n\nYou can inspect live weather graphics, water pH, and H₂S gas levels in our *Sensor Dash* (Eco-Monitor) menu! 📊";
+        else if (inputLower.includes("weather") || inputLower.includes("temperature") || inputLower.includes("temp") || inputLower.includes("rain") || inputLower.includes("monitor") || inputLower.includes("sensor") || inputLower.includes("hot") || inputLower.includes("cold") || inputLower.includes("climate") || inputLower.includes("season")) {
+          botReply = "🌤️ **Weather & Season:**\n\n• Average Air Temp: 20°C - 26°C (cool mountain climate).\n• Lake Asam Water Temp: ~35°C - 45°C.\n• Crater Crust Surface Temp: >90°C!\n• **Best Season:** May - October (Dry season) for smooth roads & clear skies.\n\nInspect live weather graphics & sensor data in our *Sensor Dash* (Eco-Monitor) menu! 📊";
         } 
         else if (inputLower.includes("history") || inputLower.includes("myth") || inputLower.includes("story") || inputLower.includes("origin") || inputLower.includes("legend") || inputLower.includes("earthquake") || inputLower.includes("dragon")) {
           botReply = "📜 **History & Mystical Lore of Suoh:**\n\n• **History:** Suoh caldera was formed during a violent 7.5 SR phreatic earthquake on June 25, 1933.\n• **Local Lore:** Crater rumbles are believed by locals to be the breathing of the Lake Guardian Dragon sleeping under the earth. Avoid throwing stones or shouting around crater spots!";
         } 
-        else if (inputLower.includes("activity") || inputLower.includes("photo") || inputLower.includes("camping") || inputLower.includes("camp") || inputLower.includes("what to do") || inputLower.includes("fishing") || inputLower.includes("drone") || inputLower.includes("boat")) {
+        else if (inputLower.includes("activity") || inputLower.includes("photo") || inputLower.includes("camping") || inputLower.includes("camp") || inputLower.includes("what to do") || inputLower.includes("fishing") || inputLower.includes("boat")) {
           botReply = "⛺ **Top Visitor Activities:**\n\n1. **Camping at Lake Lebar** (sunrise viewpoints & campfire nights).\n2. **Landscape & Drone Photography** at Keramikan Crater (Mars-like scenery).\n3. **Lake Lebar Boat Tour** with local boatmen.\n4. **Endemic Fish Fishing** & relaxing in natural hot springs.";
         } 
         else if (inputLower.includes("transport") || inputLower.includes("car") || inputLower.includes("motorcycle") || inputLower.includes("vehicle") || inputLower.includes("taxi") || inputLower.includes("parking") || inputLower.includes("bike")) {
           botReply = "🚙 **Transportation & Parking:**\n\n• Cars/Motorcycles can park safely at the Main Basecamp.\n• To enter Keramikan crater spots, we highly recommend hiring a **Local Dirt Bike Taxi** (~Rp 50,000 roundtrip) experienced in sulfur terrain!";
         }
-        else if (inputLower.includes("food") || inputLower.includes("drink") || inputLower.includes("eat") || inputLower.includes("restaurant") || inputLower.includes("cafe") || inputLower.includes("hungry") || inputLower.includes("coffee") || inputLower.includes("souvenir")) {
-          botReply = "☕ **Local Food & Coffee Specialties:**\n\nEnjoy warm food at basecamp stalls:\n• **Authentic West Lampung Robusta Coffee** (rich volcanic soil aroma).\n• Local Fried Rice, Hot Noodle Soup, & Grilled Lake Fish.\n• Take-home red-cherry Robusta coffee bean pouches directly from local farmers!";
+        else if (inputLower.includes("food") || inputLower.includes("drink") || inputLower.includes("eat") || inputLower.includes("restaurant") || inputLower.includes("cafe") || inputLower.includes("hungry") || inputLower.includes("coffee")) {
+          botReply = "☕ **Local Food & Coffee Specialties:**\n\nEnjoy warm food at basecamp stalls:\n• **Authentic West Lampung Robusta Coffee** (rich volcanic soil aroma).\n• Local Fried Rice, Hot Noodle Soup, & Grilled Lake Fish.\n• Food stalls are open from early morning till night!";
+        }
+        else if (inputLower.includes("souvenir") || inputLower.includes("gift") || inputLower.includes("shirt") || inputLower.includes("craft") || inputLower.includes("merchandise")) {
+          botReply = "🛍️ **Souvenirs & Local Gifts:**\n\nYou can purchase authentic Suoh souvenirs at the Basecamp:\n1. **Red-Cherry Robusta Coffee Beans** (Roast from Suoh farmers)\n2. **AeroSuoh Tour T-Shirts** & Carved Wooden Keychains\n3. **Decorative Sulfur Rocks & Local Orchids** in eco-pots.";
+        }
+        else if (inputLower.includes("toilet") || inputLower.includes("restroom") || inputLower.includes("bathroom") || inputLower.includes("prayer") || inputLower.includes("mosque") || inputLower.includes("facility") || inputLower.includes("wash")) {
+          botReply = "🕌 **Public Facilities (Toilets & Prayer Room):**\n\n• **Clean Musalla:** Available at Lake Lebar Basecamp complete with wudhu facilities.\n• **Toilets & Bathrooms:** Available at main parking & local homestays with fresh mountain water supply.";
+        }
+        else if (inputLower.includes("camera") || inputLower.includes("drone") || inputLower.includes("permit") || inputLower.includes("charge") || inputLower.includes("charging") || inputLower.includes("electricity") || inputLower.includes("plug")) {
+          botReply = "📸 **Photography, Drones & Charging:**\n\n• **Drone Permits:** Flying drones over Keramikan & Lakes is **FREE** and welcomed!\n• **Charging Plugs:** Free power outlets are available at Basecamp stalls & Homestays.";
+        }
+        else if (inputLower.includes("flora") || inputLower.includes("fauna") || inputLower.includes("orchid") || inputLower.includes("flower") || inputLower.includes("plant") || inputLower.includes("animal") || inputLower.includes("bird") || inputLower.includes("wildlife")) {
+          botReply = "🌿 **Endemic Flora & Fauna:**\n\n• **Volcanic Orchids:** Rare wild orchids that grow on sulfurous ground.\n• **Wildlife:** Sumatran wild birds & endemic freshwater fish in Lake Lebar. Very serene!";
+        }
+        else if (inputLower.includes("swim") || inputLower.includes("swimming") || inputLower.includes("dip") || inputLower.includes("drown") || inputLower.includes("acidic")) {
+          botReply = "⚠️ **Swimming Warning:**\n\n• **STRICTLY NO SWIMMING** in Lake Asam & Lake Minyak due to high sulfuric acidity & extreme depth.\n• For natural hot spring therapy, use designated soaking pools at local Homestays!";
+        }
+        else if (inputLower.includes("health") || inputLower.includes("sick") || inputLower.includes("first aid") || inputLower.includes("medicine") || inputLower.includes("clinic") || inputLower.includes("dizzy") || inputLower.includes("medical")) {
+          botReply = "🩺 **First Aid & Medical Facilities:**\n\n• Standard First Aid kits are available at the Main Basecamp & Guide Post.\n• If feeling dizzy from sulfur smell, move to an open windy area and wear a respirator mask.\n• Suoh District Health Center (Puskesmas) is just ±10 minutes away.";
+        }
+        else if (inputLower.includes("bus") || inputLower.includes("group") || inputLower.includes("school") || inputLower.includes("study tour")) {
+          botReply = "👥 **Group Tours & Large Buses:**\n\n• Medium/Large Tour Buses can park at the Main Basecamp Field.\n• For school / institutional groups (>20 pax), please contact Admin via WhatsApp for guide coordination & group package discounts!";
+        }
+        else if (inputLower.includes("therapy") || inputLower.includes("skin") || inputLower.includes("itch") || inputLower.includes("rheumatism") || inputLower.includes("hot spring")) {
+          botReply = "♨️ **Hot Sulfur Water Therapy:**\n\nNatural sulfur in Suoh's warm streams is traditionally believed to soothe aches, relieve rheumatism, & refresh the skin. Try the hot spring soak pools at local Homestays!";
+        }
+        else if (inputLower.includes("sdg") || inputLower.includes("conservation") || inputLower.includes("ecotourism") || inputLower.includes("competition") || inputLower.includes("green")) {
+          botReply = "🌱 **AeroSuoh Ecotourism & SDGs Commitment:**\n\nAeroSuoh supports UN SDGs No. 8 (Sustainable Economy), No. 11 (Resilient Communities), No. 13 (Climate Action), & No. 15 (Life on Land) through transparent sensor monitoring!";
         }
         else if (inputLower.includes("signal") || inputLower.includes("internet") || inputLower.includes("wifi") || inputLower.includes("connection") || inputLower.includes("network") || inputLower.includes("telkomsel")) {
           botReply = "📱 **Network & Signal Info:**\n\n• **Telkomsel** signal is reliable at the Basecamp & Homestays.\n• Central crater areas have some blank spots (perfect for a digital detox!).\n• We recommend carrying a Powerbank & downloading offline maps beforehand.";
@@ -208,7 +277,7 @@ export default function SmartAssistant() {
           botReply = "You're very welcome! 🙏 Glad I could help. Enjoy your trip to Suoh! Always stay safe and have a wonderful time. ✨";
         }
         else {
-          botReply = "Sorry, AeroBot hasn't learned that context yet. 🙏 Try clicking one of the quick topic chips above or use keywords like 'Ticket', 'Homestay', 'Route', 'Safety', 'Weather', 'Outfit', or 'Food'.";
+          botReply = "Sorry, AeroBot hasn't learned that context yet. 🙏 Try clicking one of the quick topic chips above or use keywords like 'Ticket', 'Homestay', 'Route', 'Safety', 'Weather', 'Outfit', 'Toilets', 'Drone', or 'Food'.";
         }
       }
 
