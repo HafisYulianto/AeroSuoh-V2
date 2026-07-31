@@ -22,7 +22,7 @@ export async function GET() {
   try {
     const adminSupabase = getAdminClient();
 
-    // Ambil daftar user dari Auth
+    // Ambil daftar user dari Supabase Auth
     const { data: authUsers, error: authErr } = await adminSupabase.auth.admin.listUsers();
     if (authErr) throw authErr;
 
@@ -32,7 +32,7 @@ export async function GET() {
       .select("*");
     if (profileErr) throw profileErr;
 
-    const profileMap = new Map(profiles.map((p) => [p.id, p]));
+    const profileMap = new Map(profiles ? profiles.map((p) => [p.id, p]) : []);
 
     // Gabungkan data auth & profiles
     const usersList = authUsers.users.map((u) => {
@@ -42,7 +42,7 @@ export async function GET() {
         email: u.email || p?.email || "",
         full_name: p?.full_name || u.user_metadata?.full_name || "Admin",
         role: p?.role || u.user_metadata?.role || "admin",
-        raw_password: p?.raw_password || u.user_metadata?.raw_password || "••••••••",
+        raw_password: u.user_metadata?.raw_password || "(Belum disetel)",
         created_at: u.created_at || p?.created_at || new Date().toISOString(),
       };
     });
@@ -97,7 +97,6 @@ export async function POST(request: Request) {
           email,
           full_name: fullName,
           role: role || "admin",
-          raw_password: password,
         });
 
       if (profileErr) {
@@ -129,10 +128,17 @@ export async function PUT(request: Request) {
 
     const adminSupabase = getAdminClient();
 
+    // Ambil data user yang ada sekarang untuk mempertahankan user_metadata
+    const { data: userData, error: getUserErr } = await adminSupabase.auth.admin.getUserById(id);
+    if (getUserErr) throw getUserErr;
+
+    const existingMeta = userData.user.user_metadata || {};
+
     // Prepare Auth update payload
     const updatePayload: any = {
       email,
       user_metadata: {
+        ...existingMeta,
         full_name: fullName,
         role: role || "admin",
       },
@@ -148,19 +154,13 @@ export async function PUT(request: Request) {
     if (authErr) throw authErr;
 
     // 2. Update tabel profiles
-    const profilePayload: any = {
-      email,
-      full_name: fullName,
-      role: role || "admin",
-    };
-
-    if (password && password.trim() !== "") {
-      profilePayload.raw_password = password;
-    }
-
     const { error: profileErr } = await adminSupabase
       .from("profiles")
-      .update(profilePayload)
+      .update({
+        email,
+        full_name: fullName,
+        role: role || "admin",
+      })
       .eq("id", id);
 
     if (profileErr) throw profileErr;
