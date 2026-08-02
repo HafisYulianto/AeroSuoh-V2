@@ -18,3 +18,22 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Animated QR Code Laser Scan Line Effect */
+@keyframes scanLine {
+  0% {
+    top: 2%;
+    opacity: 0.7;
+  }
+  50% {
+    top: 94%;
+    opacity: 1;
+  }
+  100% {
+    top: 2%;
+    opacity: 0.7;
+  }
+}
+
+.animate-scan-line {
+  animation: scanLine 2.2s ease-in-out infinite;
+}

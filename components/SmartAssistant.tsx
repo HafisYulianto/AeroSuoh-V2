@@ -350,24 +350,37 @@ export default function SmartAssistant() {
   // === MODAL 1: ALUR BOOKING TIKET & HOMESTAY ===
   const renderBooking = () => (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden overflow-y-auto">
-      <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+      <div className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
         
         {/* Header Booking */}
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-800 p-6 text-white flex justify-between items-center relative">
-          <div>
-            <span className="text-xs font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full text-emerald-100 mb-2 inline-block">
+        <div className="bg-emerald-800 px-6 py-4 text-white flex justify-between items-center relative">
+          <div className="flex items-center gap-2">
+            <Sparkles size={18} className="text-emerald-300" />
+            <h3 className="text-base font-extrabold tracking-wide">
               {lang === "ID" ? "Smart Booking AeroSuoh" : "AeroSuoh Smart Booking"}
-            </span>
-            <h3 className="text-2xl font-black">
-              {bookingStep === 1 && (lang === "ID" ? "Formulir Pemesanan Tiket" : "Ticket Booking Form")}
-              {bookingStep === 2 && (lang === "ID" ? "Pilih Paket Kunjungan" : "Select Package")}
-              {bookingStep === 3 && (lang === "ID" ? "Pilihan Homestay Lokal" : "Select Local Homestay")}
-              {bookingStep === 4 && (lang === "ID" ? "Metode Pembayaran QRIS" : "QRIS Payment")}
             </h3>
           </div>
-          <button onClick={() => setActiveModal(null)} className="p-2 hover:bg-white/20 rounded-full transition-colors cursor-pointer">
-            <X size={24} />
+          <button onClick={() => setActiveModal(null)} className="p-1.5 hover:bg-white/20 rounded-full transition-colors cursor-pointer text-white">
+            <X size={20} />
           </button>
+        </div>
+
+        {/* Step Indicator Circles (1) (2) (3) (4) */}
+        <div className="bg-slate-50 border-b border-slate-100 px-6 py-3 flex justify-center items-center gap-6 sm:gap-10">
+          {[1, 2, 3, 4].map((step) => (
+            <div
+              key={step}
+              className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs transition-all ${
+                bookingStep === step
+                  ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30 ring-4 ring-emerald-100"
+                  : bookingStep > step
+                  ? "bg-emerald-100 text-emerald-700"
+                  : "bg-slate-200 text-slate-500"
+              }`}
+            >
+              {bookingStep > step ? "✓" : step}
+            </div>
+          ))}
         </div>
 
         {/* Body Booking */}
@@ -422,31 +435,24 @@ export default function SmartAssistant() {
                   {bookingErrors.date && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.date}</p>}
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Jumlah Pengunjung" : "Number of Guests"}</label>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Jumlah Orang" : "Guests Count"}</label>
                   <input 
                     type="number" 
                     min="1" 
-                    max="100" 
                     value={bookingData.guests} 
-                    onChange={(e) => {
-                      setBookingData({...bookingData, guests: parseInt(e.target.value) || 1});
-                      if (bookingErrors.guests) setBookingErrors({...bookingErrors, guests: undefined});
-                    }} 
-                    className={`w-full p-3 bg-slate-50 border ${bookingErrors.guests ? 'border-rose-500 bg-rose-50/30' : 'border-slate-200'} rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors`} 
+                    onChange={(e) => setBookingData({...bookingData, guests: parseInt(e.target.value) || 1})} 
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm outline-none focus:border-emerald-500 transition-colors" 
                   />
-                  {bookingErrors.guests && <p className="text-xs text-rose-500 mt-1 font-semibold">{bookingErrors.guests}</p>}
                 </div>
               </div>
 
               <button 
                 onClick={() => {
-                  if (validateStep1()) {
-                    setBookingStep(2);
-                  }
-                }}
-                className="w-full mt-4 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  if (validateStep1()) setBookingStep(2);
+                }} 
+                className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 mt-4 cursor-pointer"
               >
-                {lang === "ID" ? "Lanjutkan" : "Next"} <ArrowRight size={18} />
+                {lang === "ID" ? "Lanjutkan Pilih Paket" : "Continue to Select Package"} <ArrowRight size={18} />
               </button>
             </div>
           )}
@@ -454,41 +460,46 @@ export default function SmartAssistant() {
           {/* STEP 2: PILIH PAKET */}
           {bookingStep === 2 && (
             <div className="space-y-4">
-              <h4 className="font-bold text-slate-800 text-lg mb-4">{lang === "ID" ? "Pilih Pengalaman Anda" : "Choose Your Experience"}</h4>
+              <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Pilih Jenis Paket Kunjungan" : "Select Visit Package Type"}</h4>
+              
               <div 
-                onClick={() => setBookingData({...bookingData, type: "daytrip"})}
-                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.type === "daytrip" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+                onClick={() => setBookingData({...bookingData, type: "daytrip", homestay: ""})}
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  bookingData.type === "daytrip" ? "border-emerald-500 bg-emerald-50/40 shadow-sm" : "border-slate-200 hover:border-slate-300"
+                }`}
               >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-slate-800">Day Trip Pass</span>
-                  <span className="font-bold text-emerald-600">Rp 25.000 / orang</span>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h5 className="font-bold text-slate-800 text-base">Day Trip Pass</h5>
+                    <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "Akses tiket masuk seluruh spot kawah & danau Suoh untuk 1 hari." : "Single-day pass access to all Suoh lakes and geothermal craters."}</p>
+                  </div>
+                  <span className="font-extrabold text-emerald-600 text-base">Rp 25.000 <span className="text-xs font-normal text-slate-400">/ pax</span></span>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed">{lang === "ID" ? "Akses 1 hari penuh ke Danau Asam dan titik pantau Kawah Geotermal." : "Full 1-day access to Lake Asam and Geothermal viewpoints."}</p>
               </div>
 
               <div 
                 onClick={() => setBookingData({...bookingData, type: "homestay"})}
-                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.type === "homestay" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
+                className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                  bookingData.type === "homestay" ? "border-emerald-500 bg-emerald-50/40 shadow-sm" : "border-slate-200 hover:border-slate-300"
+                }`}
               >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-slate-800">Eco-Staycation</span>
-                  <span className="font-bold text-emerald-600">Mulai Rp 175.000 / malam</span>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h5 className="font-bold text-slate-800 text-base">Eco-Staycation</h5>
+                    <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "Paket tiket + menginap di cabin / homestay ramah lingkungan warga lokal." : "Package includes ticket + eco-friendly homestay or cabin stay."}</p>
+                  </div>
+                  <span className="font-extrabold text-emerald-600 text-base">Rp 175.000 <span className="text-xs font-normal text-slate-400">/ pax</span></span>
                 </div>
-                <p className="text-xs text-slate-500 leading-relaxed">{lang === "ID" ? "Termasuk Day Trip Pass + Menginap 1 malam di Homestay warga lokal." : "Includes Day Trip Pass + 1 Night local Homestay."}</p>
               </div>
 
-              <div className="flex gap-3 pt-4">
-                <button onClick={() => setBookingStep(1)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors cursor-pointer">{lang === "ID" ? "Kembali" : "Back"}</button>
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setBookingStep(1)} className="px-5 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-sm">
+                  {lang === "ID" ? "Kembali" : "Back"}
+                </button>
                 <button 
                   disabled={!bookingData.type}
-                  onClick={() => {
-                    if (bookingData.type === "homestay") {
-                      setBookingStep(3);
-                    } else {
-                      setBookingStep(4);
-                    }
-                  }} 
-                  className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 transition-colors shadow-lg shadow-emerald-900/20 cursor-pointer"
+                  onClick={() => setBookingStep(bookingData.type === "homestay" ? 3 : 4)} 
+                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all disabled:bg-slate-300 disabled:shadow-none cursor-pointer text-sm"
                 >
                   {lang === "ID" ? "Lanjutkan" : "Next"}
                 </button>
@@ -496,31 +507,41 @@ export default function SmartAssistant() {
             </div>
           )}
 
-          {/* STEP 3: PILIH HOMESTAY (Jika pilih staycation) */}
+          {/* STEP 3: PILIH HOMESTAY (JIKA STAYCATION) */}
           {bookingStep === 3 && (
             <div className="space-y-4">
-              <h4 className="font-bold text-slate-800 text-lg mb-4">{lang === "ID" ? "Katalog Homestay Lokal" : "Local Homestay Catalog"}</h4>
-              <div 
-                onClick={() => setBookingData({...bookingData, homestay: "Homestay Danau Asam"})}
-                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.homestay === "Homestay Danau Asam" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
-              >
-                <span className="font-bold text-slate-800 block">Homestay Danau Asam</span>
-                <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "View langsung ke danau, fasilitas air hangat alami." : "Direct lake view, natural hot spring facility."}</p>
-              </div>
-              <div 
-                onClick={() => setBookingData({...bookingData, homestay: "Geothermal Cabin"})}
-                className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${bookingData.homestay === "Geothermal Cabin" ? "border-emerald-600 bg-emerald-50/50 shadow-md" : "border-slate-200 hover:border-slate-300"}`}
-              >
-                <span className="font-bold text-slate-800 block">Geothermal Cabin</span>
-                <p className="text-xs text-slate-500 mt-1">{lang === "ID" ? "Dekat area kawah, nuansa pedesaan yang asri." : "Near crater area, beautiful rustic vibes."}</p>
-              </div>
+              <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Pilih Homestay Penginapan" : "Select Accommodation Homestay"}</h4>
+              
+              {[
+                { name: "Geothermal Cabin", desc: "View langsung Danau Asam, fasiltas kamar mandi dalam & teh hangat geotermal.", icon: Home },
+                { name: "Rumah Warga Suoh Eco-Stay", desc: "Pengalaman autentik tinggal bersama warga lokal Suoh, ramah keluarga.", icon: Home },
+                { name: "Danau Minyak Rest House", desc: "Suasana tenang di tepi Danau Minyak, cocok untuk rombongan & fotografi.", icon: Home }
+              ].map((item, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => setBookingData({...bookingData, homestay: item.name})}
+                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                    bookingData.homestay === item.name ? "border-emerald-500 bg-emerald-50/40 shadow-sm" : "border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  <div className="flex gap-3">
+                    <div className="p-2.5 bg-emerald-100 text-emerald-700 rounded-xl h-fit shrink-0"><item.icon size={20} /></div>
+                    <div>
+                      <h5 className="font-bold text-slate-800 text-sm">{item.name}</h5>
+                      <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
 
-              <div className="flex gap-3 pt-4">
-                <button onClick={() => setBookingStep(2)} className="w-1/3 py-3 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors cursor-pointer">{lang === "ID" ? "Kembali" : "Back"}</button>
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setBookingStep(2)} className="px-5 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-sm">
+                  {lang === "ID" ? "Kembali" : "Back"}
+                </button>
                 <button 
                   disabled={!bookingData.homestay}
                   onClick={() => setBookingStep(4)} 
-                  className="w-2/3 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 disabled:bg-slate-300 transition-colors shadow-lg shadow-emerald-900/20 cursor-pointer"
+                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all disabled:bg-slate-300 disabled:shadow-none cursor-pointer text-sm"
                 >
                   {lang === "ID" ? "Lanjutkan" : "Next"}
                 </button>
@@ -528,76 +549,93 @@ export default function SmartAssistant() {
             </div>
           )}
 
-          {/* STEP 4: PEMBAYARAN & WHATSAPP CHECKOUT */}
+          {/* STEP 4: PEMBAYARAN & WHATSAPP CHECKOUT (DESAIN PHOTO 2 - 2 KOLOM KIRI KANAN) */}
           {bookingStep === 4 && (
-            <div className="space-y-6 text-center">
+            <div className="space-y-6">
               
-              {/* Tampilan QRIS */}
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center">
-                <div className="flex items-center gap-2 mb-3 text-slate-700 font-bold text-sm">
-                  <QrCode size={18} className="text-emerald-600" />
-                  <span>{t("qris_title")}</span>
+              {/* Header Selesaikan Pembayaran */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-2 shadow-inner">
+                  <CheckCircle2 size={24} />
                 </div>
+                <h3 className="text-xl font-extrabold text-slate-800">
+                  {t("qris_title")}
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mt-1 leading-relaxed">
+                  {t("qris_instruction")}
+                </p>
+              </div>
+
+              {/* Grid 2-Kolom Presisi Sesuai Foto 2 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
                 
-                {/* Gambar QRIS */}
-                <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-md mb-3">
+                {/* Kolom Kiri: Foto QRIS dengan Dashed Border & Efek Laser Scan Animated */}
+                <div className="relative border-2 border-dashed border-emerald-400/80 rounded-2xl p-3 bg-white flex items-center justify-center shadow-xs overflow-hidden min-h-[220px]">
+                  {/* Garis Laser Hijau Animasi */}
+                  <div className="absolute left-1 right-1 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_14px_#10b981] animate-scan-line z-10 pointer-events-none"></div>
+                  
+                  {/* Gambar QRIS Resmi */}
                   <img 
                     src="/payment/QRIS.png" 
                     alt="QRIS AeroSuoh" 
-                    className="w-56 h-auto max-h-64 object-contain rounded-lg"
+                    className="w-full h-auto max-h-64 object-contain rounded-lg"
                   />
                 </div>
-                <p className="text-xs text-slate-500 max-w-xs">{t("qris_instruction")}</p>
-              </div>
 
-              {/* Ringkasan Tagihan */}
-              <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 text-left">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-200 pb-2 mb-4">{lang === "ID" ? "Ringkasan Pesanan & Tagihan" : "Order & Bill Summary"}</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">{lang === "ID" ? "Nama" : "Name"}</span>
-                    <span className="text-sm font-bold text-slate-800">{bookingData.name}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">{lang === "ID" ? "Paket" : "Package"}</span>
-                    <span className="text-sm font-bold text-slate-800">
-                      {bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}
-                    </span>
-                  </div>
-                  {bookingData.homestay && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-slate-600">Homestay</span>
-                      <span className="text-sm font-bold text-emerald-600">{bookingData.homestay}</span>
+                {/* Kolom Kanan: Ringkasan Pesanan & Tagihan */}
+                <div className="bg-slate-50/80 p-5 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-4">
+                  <div>
+                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-200/80 pb-2 mb-3">
+                      {lang === "ID" ? "RINGKASAN PESANAN & TAGIHAN" : "ORDER & BILL SUMMARY"}
+                    </p>
+                    <div className="space-y-2.5">
+                      <div className="flex justify-between items-center text-xs sm:text-sm">
+                        <span className="text-slate-500 font-medium">{lang === "ID" ? "Paket" : "Package"}</span>
+                        <span className="font-bold text-slate-800">
+                          {bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}
+                        </span>
+                      </div>
+                      {bookingData.homestay && (
+                        <div className="flex justify-between items-center text-xs sm:text-sm">
+                          <span className="text-slate-500 font-medium">Homestay</span>
+                          <span className="font-bold text-emerald-600">{bookingData.homestay}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center text-xs sm:text-sm">
+                        <span className="text-slate-500 font-medium">{lang === "ID" ? "Tanggal" : "Date"}</span>
+                        <span className="font-bold text-slate-800">{bookingData.date || "-"}</span>
+                      </div>
+                      <div className="flex justify-between items-center text-xs sm:text-sm">
+                        <span className="text-slate-500 font-medium">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
+                        <span className="font-bold text-slate-800">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">{lang === "ID" ? "Tanggal" : "Date"}</span>
-                    <span className="text-sm font-bold text-slate-800">{bookingData.date || "-"}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-slate-600">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
-                    <span className="text-sm font-bold text-slate-800 text-right">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
-                  </div>
-                  <div className="flex justify-between items-center border-t border-emerald-200 pt-2 mt-2">
-                    <span className="text-sm font-bold text-emerald-900">{lang === "ID" ? "Total Tagihan" : "Total Bill"}</span>
-                    <span className="text-base font-black text-emerald-600">
+
+                  {/* Kotak Total Tagihan Hijau */}
+                  <div className="bg-emerald-50 border border-emerald-100 p-3.5 rounded-xl flex justify-between items-center mt-auto">
+                    <span className="text-xs font-bold text-emerald-900 uppercase tracking-wide">
+                      {lang === "ID" ? "Total Tagihan" : "Total Bill"}
+                    </span>
+                    <span className="text-base sm:text-lg font-black text-emerald-600">
                       Rp {((bookingData.type === "homestay" ? 175000 : 25000) * bookingData.guests).toLocaleString("id-ID")}
                     </span>
                   </div>
                 </div>
+
               </div>
 
-              {/* Tombol Konfirmasi WhatsApp */}
-              <div className="space-y-2">
+              {/* Tombol Konfirmasi WA & Edit Pesanan */}
+              <div className="space-y-2 pt-1">
                 <button 
                   onClick={handleCheckout}
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/30 transition-all flex items-center justify-center gap-2 text-base cursor-pointer"
+                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer"
                 >
                   <Ticket size={18} /> {lang === "ID" ? "Konfirmasi Pembayaran via WA" : "Confirm Payment via WA"}
                 </button>
                 <button 
                   onClick={() => setBookingStep(1)} 
-                  className="text-xs text-slate-400 hover:text-slate-600 transition-colors py-1 block w-full text-center cursor-pointer"
+                  className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors py-1 block w-full text-center cursor-pointer"
                 >
                   {lang === "ID" ? "Edit Pesanan" : "Edit Booking"}
                 </button>
