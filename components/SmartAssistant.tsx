@@ -542,9 +542,9 @@ export default function SmartAssistant() {
                 {/* Gambar QRIS */}
                 <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-md mb-3">
                   <img 
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=AEROSUOH_GEOTHERMAL_TOURISM_PAYMENT" 
+                    src="/payment/QRIS.png" 
                     alt="QRIS AeroSuoh" 
-                    className="w-44 h-44 object-contain"
+                    className="w-56 h-auto max-h-64 object-contain rounded-lg"
                   />
                 </div>
                 <p className="text-xs text-slate-500 max-w-xs">{t("qris_instruction")}</p>
