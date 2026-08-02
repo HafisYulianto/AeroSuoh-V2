@@ -133,9 +133,9 @@ export default function AdminDashboardLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row">
+    <div className="h-screen bg-slate-100 flex flex-col md:flex-row overflow-hidden">
       {/* Mobile Header Bar */}
-      <div className="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between z-50 sticky top-0 shadow-md">
+      <div className="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between z-50 sticky top-0 shadow-md shrink-0">
         <div className="flex items-center gap-3">
           <NextImage src="/logo-aerosuoh2.png" alt="Logo" width={40} height={40} className="w-10 h-auto object-contain" />
           <span className="font-extrabold text-base tracking-wide text-emerald-400">AeroSuoh Admin</span>
@@ -153,8 +153,8 @@ export default function AdminDashboardLayout({
       >
         <div>
           {/* Header logo */}
-          <div className="p-6 border-b border-slate-800 hidden md:flex items-center gap-4">
-            <NextImage src="/logo-aerosuoh2.png" alt="Logo" width={50} height={50} className="w-12 h-auto object-contain" />
+          <div className="p-5 border-b border-slate-800 hidden md:flex items-center gap-4">
+            <NextImage src="/logo-aerosuoh2.png" alt="Logo" width={44} height={44} className="w-10 h-auto object-contain" />
             <div>
               <h1 className="font-black text-white text-base leading-tight tracking-wide">AeroSuoh</h1>
               <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Admin Panel</p>
@@ -162,7 +162,7 @@ export default function AdminDashboardLayout({
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[70vh] custom-scrollbar">
+          <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)] custom-scrollbar">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const active = pathname === item.path;
@@ -171,13 +171,13 @@ export default function AdminDashboardLayout({
                   key={item.path}
                   href={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                  className={`flex items-center gap-3 px-3.5 py-2 rounded-xl font-semibold text-xs transition-all ${
                     active 
-                      ? "bg-emerald-600 text-white shadow-lg shadow-emerald-700/30" 
+                      ? "bg-emerald-600 text-white shadow-md shadow-emerald-700/30" 
                       : "hover:bg-slate-800 hover:text-white"
                   }`}
                 >
-                  <Icon size={18} />
+                  <Icon size={16} />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -186,22 +186,22 @@ export default function AdminDashboardLayout({
         </div>
 
         {/* User profile & Logout */}
-        <div className="p-4 border-t border-slate-800 bg-slate-950/40">
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-10 h-10 rounded-full bg-emerald-700 flex items-center justify-center text-white font-extrabold text-sm shadow-inner uppercase">
+        <div className="p-3 border-t border-slate-800 bg-slate-950/40 shrink-0">
+          <div className="flex items-center gap-3 mb-2.5 px-1">
+            <div className="w-8 h-8 rounded-full bg-emerald-700 flex items-center justify-center text-white font-extrabold text-xs shadow-inner uppercase shrink-0">
               {profile?.full_name?.charAt(0) || profile?.email?.charAt(0) || "A"}
             </div>
             <div className="overflow-hidden">
-              <h4 className="font-bold text-sm text-white truncate">{profile?.full_name || "Admin"}</h4>
-              <p className="text-[10px] text-emerald-400 font-bold tracking-wider uppercase truncate">{profile?.role}</p>
+              <h4 className="font-bold text-xs text-white truncate">{profile?.full_name || "Admin"}</h4>
+              <p className="text-[9px] text-emerald-400 font-bold tracking-wider uppercase truncate">{profile?.role}</p>
             </div>
           </div>
 
           <button 
             onClick={confirmLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-600 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl font-bold text-xs bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-600 transition-all cursor-pointer"
           >
-            <LogOut size={14} />
+            <LogOut size={13} />
             <span>Keluar Akun</span>
           </button>
         </div>
@@ -215,8 +215,8 @@ export default function AdminDashboardLayout({
         ></div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-6 md:p-10 max-w-full overflow-x-hidden min-h-[calc(100vh-72px)] md:min-h-screen">
+      {/* Main Content Area (Compact 1-Screen Height Bounded Area) */}
+      <main className="flex-1 p-4 md:p-6 max-w-full overflow-y-auto h-full custom-scrollbar">
         {children}
       </main>
 
