@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
-import { Settings, Save, Upload, CheckCircle, Loader2 } from "lucide-react";
+import { Settings, Save, Upload, CheckCircle, Loader2, CreditCard, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function SiteSettingsAdmin() {
   const [settings, setSettings] = useState<Record<string, string>>({});
@@ -120,6 +121,26 @@ export default function SiteSettingsAdmin() {
         <p className="text-sm text-slate-500 mt-1">Ubah judul hero, deskripsi, tombol, dan gambar background di landing page.</p>
       </div>
 
+      {/* QUICK SHORTCUT CARD TO PAYMENTS PAGE */}
+      <div className="bg-gradient-to-r from-slate-900 to-emerald-950 p-6 rounded-3xl text-white shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-emerald-900/40">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-2xl border border-emerald-500/30 shrink-0">
+            <CreditCard size={28} />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-base text-white">Kelola Foto QRIS & Rekening Bank</h4>
+            <p className="text-xs text-slate-300 mt-0.5">Ingin mengganti foto barcode QRIS atau nomor rekening transfer pengunjung? Gunakan menu khusus Metode Pembayaran.</p>
+          </div>
+        </div>
+        <Link
+          href="/admin/dashboard/payments"
+          className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer shadow-lg shadow-emerald-600/30"
+        >
+          <span>Ke Metode Pembayaran</span>
+          <ArrowRight size={14} />
+        </Link>
+      </div>
+
       {status === "success" && (
         <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 font-semibold text-sm">
           <CheckCircle className="text-emerald-600 shrink-0" />
@@ -216,7 +237,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_title_1_id || ""}
                 onChange={(e) => handleChange("hero_title_1_id", e.target.value)}
-                required
+                placeholder="Menjaga Harta Karun"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -226,7 +247,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_title_1_en || ""}
                 onChange={(e) => handleChange("hero_title_1_en", e.target.value)}
-                required
+                placeholder="Preserving the Treasures of"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -237,7 +258,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_title_2_id || ""}
                 onChange={(e) => handleChange("hero_title_2_id", e.target.value)}
-                required
+                placeholder="Lampung Barat"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -247,7 +268,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_title_2_en || ""}
                 onChange={(e) => handleChange("hero_title_2_en", e.target.value)}
-                required
+                placeholder="West Lampung"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -265,7 +286,7 @@ export default function SiteSettingsAdmin() {
                 rows={3}
                 value={settings.hero_desc_id || ""}
                 onChange={(e) => handleChange("hero_desc_id", e.target.value)}
-                required
+                placeholder="Platform pariwisata pintar dan dasbor pemantauan geotermal..."
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all resize-none"
               />
             </div>
@@ -275,7 +296,7 @@ export default function SiteSettingsAdmin() {
                 rows={3}
                 value={settings.hero_desc_en || ""}
                 onChange={(e) => handleChange("hero_desc_en", e.target.value)}
-                required
+                placeholder="Smart tourism platform and geothermal monitoring dashboard..."
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all resize-none"
               />
             </div>
@@ -293,7 +314,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_btn_1_id || ""}
                 onChange={(e) => handleChange("hero_btn_1_id", e.target.value)}
-                required
+                placeholder="Mulai Eksplorasi"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -303,7 +324,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_btn_1_en || ""}
                 onChange={(e) => handleChange("hero_btn_1_en", e.target.value)}
-                required
+                placeholder="Start Exploring"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -314,7 +335,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_btn_2_id || ""}
                 onChange={(e) => handleChange("hero_btn_2_id", e.target.value)}
-                required
+                placeholder="Lihat Dasbor"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
@@ -324,84 +345,7 @@ export default function SiteSettingsAdmin() {
                 type="text" 
                 value={settings.hero_btn_2_en || ""}
                 onChange={(e) => handleChange("hero_btn_2_en", e.target.value)}
-                required
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* PENGATURAN PEMBAYARAN (QRIS & TRANSFER BANK) */}
-        <div className="border-t border-slate-100 pt-8 space-y-6">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="text-base font-bold text-slate-800">Pengaturan Pembayaran (QRIS & Transfer Bank)</h3>
-            <p className="text-xs text-slate-500 mt-1">Kelola foto barcode QRIS dan informasi rekening bank yang tampil saat pengunjung memesan tiket.</p>
-          </div>
-
-          {/* Upload QRIS */}
-          <div className="flex flex-col sm:flex-row gap-6 items-start">
-            <div className="relative w-44 h-56 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-inner flex items-center justify-center p-2">
-              <Image 
-                src={settings.qris_image_url || "/payment/QRIS.png"}
-                alt="Preview QRIS"
-                fill
-                className="object-contain p-2"
-              />
-            </div>
-            
-            <div className="space-y-3 flex-1">
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">Foto Barcode QRIS Pembayaran</label>
-              <p className="text-xs font-semibold text-slate-500 leading-relaxed">
-                Unggah gambar barcode QRIS resmi (JPG/PNG). Gambar ini akan otomatis muncul pada langkah pembayaran pemesanan tiket pengunjung.
-              </p>
-              
-              <div className="flex items-center gap-3 pt-1">
-                <label className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold tracking-wider cursor-pointer shadow-md shadow-slate-900/10">
-                  <Upload size={14} />
-                  {uploading ? "Mengunggah..." : "Unggah QRIS Baru"}
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload("qris_image_url", e)}
-                    disabled={uploading}
-                    className="hidden" 
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Transfer Bank Detail Inputs */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nama Bank / Provider</label>
-              <input 
-                type="text" 
-                value={settings.bank_name || ""}
-                onChange={(e) => handleChange("bank_name", e.target.value)}
-                placeholder="e.g. Bank BRI / Mandiri / Dana"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nomor Rekening / No. E-Wallet</label>
-              <input 
-                type="text" 
-                value={settings.bank_account_number || ""}
-                onChange={(e) => handleChange("bank_account_number", e.target.value)}
-                placeholder="e.g. 1234-01-005678-53-9"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all font-mono"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Atas Nama (Pemilik Rekening)</label>
-              <input 
-                type="text" 
-                value={settings.bank_account_holder || ""}
-                onChange={(e) => handleChange("bank_account_holder", e.target.value)}
-                placeholder="e.g. AeroSuoh Tourism Management"
+                placeholder="View Dashboard"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
