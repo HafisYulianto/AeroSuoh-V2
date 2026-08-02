@@ -366,10 +366,10 @@ export default function SmartAssistant() {
 
     return (
       <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 print:hidden overflow-y-auto">
-        <div className="bg-white rounded-3xl w-full max-w-2xl min-h-[580px] flex flex-col justify-between overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="bg-white rounded-3xl w-full max-w-2xl h-[620px] max-h-[90vh] flex flex-col justify-between overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
           
-          {/* Header Booking */}
-          <div className="bg-emerald-800 px-6 py-4 text-white flex justify-between items-center relative shrink-0">
+          {/* Header Booking (Fixed Height) */}
+          <div className="bg-emerald-800 px-6 py-4 text-white flex justify-between items-center relative shrink-0 h-[58px]">
             <div className="flex items-center gap-2">
               <Sparkles size={18} className="text-emerald-300" />
               <h3 className="text-base font-extrabold tracking-wide">
@@ -381,8 +381,8 @@ export default function SmartAssistant() {
             </button>
           </div>
 
-          {/* Step Indicator Circles (1) (2) (3) (4) */}
-          <div className="bg-slate-50 border-b border-slate-100 px-6 py-3 flex justify-center items-center gap-6 sm:gap-10 shrink-0">
+          {/* Step Indicator Circles (Fixed Height) */}
+          <div className="bg-slate-50 border-b border-slate-100 px-6 py-3 flex justify-center items-center gap-6 sm:gap-10 shrink-0 h-[54px]">
             {[1, 2, 3, 4].map((step) => (
               <div
                 key={step}
@@ -399,13 +399,13 @@ export default function SmartAssistant() {
             ))}
           </div>
 
-          {/* Body Booking (Konsisten Tinggi & Ukuran di Seluruh Step 1 - 4) */}
-          <div className="p-6 flex-1 flex flex-col justify-between min-h-[460px]">
+          {/* Body Booking (Strict Fixed Height & Layout Across Steps 1 - 4) */}
+          <div className="p-6 flex-1 flex flex-col justify-between overflow-hidden">
             
             {/* STEP 1: DATA DIRI */}
             {bookingStep === 1 && (
-              <div className="flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-4">
+              <div className="h-full flex flex-col justify-between">
+                <div className="space-y-4 overflow-y-auto pr-1">
                   <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Lengkapi Data Diri & Rencana Kunjungan" : "Complete Personal Data & Visit Plan"}</h4>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1 block">{lang === "ID" ? "Nama Lengkap" : "Full Name"}</label>
@@ -464,21 +464,23 @@ export default function SmartAssistant() {
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => {
-                    if (validateStep1()) setBookingStep(2);
-                  }} 
-                  className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer mt-auto"
-                >
-                  {lang === "ID" ? "Lanjutkan Pilih Paket" : "Continue to Select Package"} <ArrowRight size={18} />
-                </button>
+                <div className="pt-4 shrink-0">
+                  <button 
+                    onClick={() => {
+                      if (validateStep1()) setBookingStep(2);
+                    }} 
+                    className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    {lang === "ID" ? "Lanjutkan Pilih Paket" : "Continue to Select Package"} <ArrowRight size={18} />
+                  </button>
+                </div>
               </div>
             )}
 
             {/* STEP 2: PILIH PAKET */}
             {bookingStep === 2 && (
-              <div className="flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-4">
+              <div className="h-full flex flex-col justify-between">
+                <div className="space-y-4 overflow-y-auto pr-1">
                   <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Pilih Jenis Paket Kunjungan" : "Select Visit Package Type"}</h4>
                   
                   <div 
@@ -512,7 +514,7 @@ export default function SmartAssistant() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-2 mt-auto">
+                <div className="flex gap-3 pt-4 shrink-0">
                   <button onClick={() => setBookingStep(1)} className="px-5 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-sm">
                     {lang === "ID" ? "Kembali" : "Back"}
                   </button>
@@ -529,8 +531,8 @@ export default function SmartAssistant() {
 
             {/* STEP 3: PILIH HOMESTAY (JIKA STAYCATION) */}
             {bookingStep === 3 && (
-              <div className="flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-3">
+              <div className="h-full flex flex-col justify-between">
+                <div className="space-y-3 overflow-y-auto pr-1">
                   <h4 className="font-bold text-slate-800 text-base">{lang === "ID" ? "Pilih Homestay Penginapan" : "Select Accommodation Homestay"}</h4>
                   
                   {[
@@ -556,7 +558,7 @@ export default function SmartAssistant() {
                   ))}
                 </div>
 
-                <div className="flex gap-3 pt-2 mt-auto">
+                <div className="flex gap-3 pt-4 shrink-0">
                   <button onClick={() => setBookingStep(2)} className="px-5 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer text-sm">
                     {lang === "ID" ? "Kembali" : "Back"}
                   </button>
@@ -573,148 +575,151 @@ export default function SmartAssistant() {
 
             {/* STEP 4: PEMBAYARAN & WHATSAPP CHECKOUT (QRIS & TRANSFER BANK DINAMIS) */}
             {bookingStep === 4 && (
-              <div className="flex-1 flex flex-col justify-between space-y-4">
-                
-                {/* Header Selesaikan Pembayaran */}
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-1.5 shadow-inner">
-                    <CheckCircle2 size={22} />
-                  </div>
-                  <h3 className="text-lg font-extrabold text-slate-800">
-                    {t("qris_title")}
-                  </h3>
-                  <p className="text-xs text-slate-500 max-w-md mt-0.5 leading-relaxed">
-                    {t("qris_instruction")}
-                  </p>
-                </div>
-
-                {/* Tab Switcher: QRIS vs Transfer Bank */}
-                <div className="flex justify-center border-b border-slate-200">
-                  <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("qris")}
-                      className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        paymentMethod === "qris"
-                          ? "bg-white text-emerald-700 shadow-sm"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
-                    >
-                      <QrCode size={14} />
-                      <span>Kode QRIS</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("transfer")}
-                      className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                        paymentMethod === "transfer"
-                          ? "bg-white text-emerald-700 shadow-sm"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
-                    >
-                      <Building2 size={14} />
-                      <span>Transfer Bank / E-Wallet</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Grid 2-Kolom Presisi Sesuai Foto 2 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+              <div className="h-full flex flex-col justify-between">
+                <div className="space-y-3 overflow-y-auto pr-1">
                   
-                  {/* Kolom Kiri: QRIS atau Transfer Bank Detail */}
-                  {paymentMethod === "qris" ? (
-                    <div className="relative border-2 border-dashed border-emerald-400/80 rounded-2xl p-3 bg-white flex items-center justify-center shadow-xs overflow-hidden min-h-[200px]">
-                      {/* Garis Laser Hijau Animasi */}
-                      <div className="absolute left-1 right-1 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_14px_#10b981] animate-scan-line z-10 pointer-events-none"></div>
-                      
-                      {/* Gambar QRIS Dinamis */}
-                      <img 
-                        src={qrisImage} 
-                        alt="QRIS AeroSuoh" 
-                        className="w-full h-auto max-h-56 object-contain rounded-lg"
-                      />
+                  {/* Header Selesaikan Pembayaran */}
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-1 shadow-inner">
+                      <CheckCircle2 size={20} />
                     </div>
-                  ) : (
-                    <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50 flex flex-col justify-between space-y-3 min-h-[200px]">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-slate-800 font-bold text-xs border-b border-slate-200 pb-2">
-                          <Building2 size={16} className="text-emerald-600" />
-                          <span>{bankName}</span>
-                        </div>
+                    <h3 className="text-base font-extrabold text-slate-800">
+                      {t("qris_title")}
+                    </h3>
+                    <p className="text-[11px] text-slate-500 max-w-md mt-0.5 leading-relaxed">
+                      {t("qris_instruction")}
+                    </p>
+                  </div>
 
-                        <div>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nomor Rekening</span>
-                          <div className="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200">
-                            <span className="font-mono text-sm font-bold text-slate-800 tracking-wider">{bankAccNum}</span>
-                            <button
-                              type="button"
-                              onClick={handleCopyAccount}
-                              className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg transition-all cursor-pointer"
-                            >
-                              {copiedBank ? <Check size={12} /> : <Copy size={12} />}
-                              <span>{copiedBank ? "Tersalin!" : "Salin"}</span>
-                            </button>
+                  {/* Tab Switcher: QRIS vs Transfer Bank */}
+                  <div className="flex justify-center border-b border-slate-200 pb-1">
+                    <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("qris")}
+                        className={`flex items-center gap-1.5 px-4 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          paymentMethod === "qris"
+                            ? "bg-white text-emerald-700 shadow-sm"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        <QrCode size={14} />
+                        <span>Kode QRIS</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("transfer")}
+                        className={`flex items-center gap-1.5 px-4 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          paymentMethod === "transfer"
+                            ? "bg-white text-emerald-700 shadow-sm"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        <Building2 size={14} />
+                        <span>Transfer Bank / E-Wallet</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Grid 2-Kolom Presisi Sesuai Foto 2 */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+                    
+                    {/* Kolom Kiri: QRIS atau Transfer Bank Detail */}
+                    {paymentMethod === "qris" ? (
+                      <div className="relative border-2 border-dashed border-emerald-400/80 rounded-2xl p-2.5 bg-white flex items-center justify-center shadow-xs overflow-hidden h-[190px]">
+                        {/* Garis Laser Hijau Animasi */}
+                        <div className="absolute left-1 right-1 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_14px_#10b981] animate-scan-line z-10 pointer-events-none"></div>
+                        
+                        {/* Gambar QRIS Dinamis */}
+                        <img 
+                          src={qrisImage} 
+                          alt="QRIS AeroSuoh" 
+                          className="w-full h-auto max-h-44 object-contain rounded-lg"
+                        />
+                      </div>
+                    ) : (
+                      <div className="border border-slate-200 rounded-2xl p-3.5 bg-slate-50 flex flex-col justify-between space-y-2 h-[190px]">
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2 text-slate-800 font-bold text-xs border-b border-slate-200 pb-1.5">
+                            <Building2 size={15} className="text-emerald-600" />
+                            <span>{bankName}</span>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Nomor Rekening</span>
+                            <div className="flex items-center justify-between bg-white p-2 rounded-xl border border-slate-200">
+                              <span className="font-mono text-xs font-bold text-slate-800 tracking-wider">{bankAccNum}</span>
+                              <button
+                                type="button"
+                                onClick={handleCopyAccount}
+                                className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2 py-0.5 rounded-md transition-all cursor-pointer"
+                              >
+                                {copiedBank ? <Check size={11} /> : <Copy size={11} />}
+                                <span>{copiedBank ? "Tersalin!" : "Salin"}</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          <div>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Atas Nama</span>
+                            <span className="text-xs font-bold text-slate-700 block truncate">{bankAccHolder}</span>
                           </div>
                         </div>
 
-                        <div>
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">Atas Nama</span>
-                          <span className="text-xs font-bold text-slate-700 block">{bankAccHolder}</span>
-                        </div>
+                        <p className="text-[9px] text-slate-400 italic">
+                          *Kirim bukti transfer ke WA Admin setelah bayar.
+                        </p>
                       </div>
+                    )}
 
-                      <p className="text-[10px] text-slate-400 italic">
-                        *Transfer sesuai total tagihan lalu kirim bukti transfer ke WhatsApp Admin.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Kolom Kanan: Ringkasan Pesanan & Tagihan */}
-                  <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-3">
-                    <div>
-                      <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-200/80 pb-1.5 mb-2.5">
-                        {lang === "ID" ? "RINGKASAN PESANAN & TAGIHAN" : "ORDER & BILL SUMMARY"}
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500 font-medium">{lang === "ID" ? "Paket" : "Package"}</span>
-                          <span className="font-bold text-slate-800">
-                            {bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}
-                          </span>
-                        </div>
-                        {bookingData.homestay && (
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="text-slate-500 font-medium">Homestay</span>
-                            <span className="font-bold text-emerald-600">{bookingData.homestay}</span>
+                    {/* Kolom Kanan: Ringkasan Pesanan & Tagihan */}
+                    <div className="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-2 h-[190px]">
+                      <div>
+                        <p className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest border-b border-slate-200/80 pb-1 mb-2">
+                          {lang === "ID" ? "RINGKASAN PESANAN & TAGIHAN" : "ORDER & BILL SUMMARY"}
+                        </p>
+                        <div className="space-y-1.5 text-xs">
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 font-medium">{lang === "ID" ? "Paket" : "Package"}</span>
+                            <span className="font-bold text-slate-800">
+                              {bookingData.type === "homestay" ? "Eco-Staycation" : "Day Trip Pass"}
+                            </span>
                           </div>
-                        )}
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500 font-medium">{lang === "ID" ? "Tanggal" : "Date"}</span>
-                          <span className="font-bold text-slate-800">{bookingData.date || "-"}</span>
+                          {bookingData.homestay && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-slate-500 font-medium">Homestay</span>
+                              <span className="font-bold text-emerald-600 truncate max-w-[110px] text-right">{bookingData.homestay}</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 font-medium">{lang === "ID" ? "Tanggal" : "Date"}</span>
+                            <span className="font-bold text-slate-800">{bookingData.date || "-"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-slate-500 font-medium">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
+                            <span className="font-bold text-slate-800">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500 font-medium">{lang === "ID" ? "Pengunjung" : "Guests"}</span>
-                          <span className="font-bold text-slate-800">{bookingData.guests} {lang === "ID" ? "Orang" : "Pax"}</span>
-                        </div>
+                      </div>
+
+                      {/* Kotak Total Tagihan Hijau */}
+                      <div className="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl flex justify-between items-center mt-auto">
+                        <span className="text-[11px] font-bold text-emerald-900 uppercase tracking-wide">
+                          {lang === "ID" ? "Total Tagihan" : "Total Bill"}
+                        </span>
+                        <span className="text-sm font-black text-emerald-600">
+                          Rp {((bookingData.type === "homestay" ? 175000 : 25000) * bookingData.guests).toLocaleString("id-ID")}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Kotak Total Tagihan Hijau */}
-                    <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex justify-between items-center mt-auto">
-                      <span className="text-xs font-bold text-emerald-900 uppercase tracking-wide">
-                        {lang === "ID" ? "Total Tagihan" : "Total Bill"}
-                      </span>
-                      <span className="text-base font-black text-emerald-600">
-                        Rp {((bookingData.type === "homestay" ? 175000 : 25000) * bookingData.guests).toLocaleString("id-ID")}
-                      </span>
-                    </div>
                   </div>
 
                 </div>
 
                 {/* Tombol Konfirmasi WA & Edit Pesanan */}
-                <div className="space-y-1.5 pt-1 mt-auto">
+                <div className="space-y-1 pt-2 shrink-0">
                   <button 
                     onClick={handleCheckout}
                     className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-900/20 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
@@ -723,7 +728,7 @@ export default function SmartAssistant() {
                   </button>
                   <button 
                     onClick={() => setBookingStep(1)} 
-                    className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors py-1 block w-full text-center cursor-pointer"
+                    className="text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors py-0.5 block w-full text-center cursor-pointer"
                   >
                     {lang === "ID" ? "Edit Pesanan" : "Edit Booking"}
                   </button>

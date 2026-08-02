@@ -17,7 +17,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  Loader2
+  Loader2,
+  CreditCard
 } from "lucide-react";
 import Link from "next/link";
 import NextImage from "next/image";
@@ -115,6 +116,7 @@ export default function AdminDashboardLayout({
 
   const menuItems = [
     { name: "Ringkasan Dasbor", path: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "Metode Pembayaran", path: "/admin/dashboard/payments", icon: CreditCard },
     { name: "Pengaturan Situs", path: "/admin/dashboard/site-settings", icon: Settings },
     { name: "Pesona Suoh (Galeri)", path: "/admin/dashboard/gallery", icon: Image },
     { name: "Panduan Keselamatan", path: "/admin/dashboard/safety", icon: ShieldAlert },
