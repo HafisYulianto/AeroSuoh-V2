@@ -44,12 +44,11 @@ export default function SiteSettingsAdmin() {
     setStatus("idle");
 
     try {
-      // Perbarui setiap key secara paralel
+      // Perbarui/Upsert setiap key secara paralel
       const promises = Object.entries(settings).map(async ([key, value]) => {
         return supabase
           .from("site_settings")
-          .update({ value })
-          .eq("key", key);
+          .upsert({ key, value });
       });
 
       await Promise.all(promises);
@@ -326,6 +325,83 @@ export default function SiteSettingsAdmin() {
                 value={settings.hero_btn_2_en || ""}
                 onChange={(e) => handleChange("hero_btn_2_en", e.target.value)}
                 required
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* PENGATURAN PEMBAYARAN (QRIS & TRANSFER BANK) */}
+        <div className="border-t border-slate-100 pt-8 space-y-6">
+          <div className="border-b border-slate-100 pb-3">
+            <h3 className="text-base font-bold text-slate-800">Pengaturan Pembayaran (QRIS & Transfer Bank)</h3>
+            <p className="text-xs text-slate-500 mt-1">Kelola foto barcode QRIS dan informasi rekening bank yang tampil saat pengunjung memesan tiket.</p>
+          </div>
+
+          {/* Upload QRIS */}
+          <div className="flex flex-col sm:flex-row gap-6 items-start">
+            <div className="relative w-44 h-56 rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-inner flex items-center justify-center p-2">
+              <Image 
+                src={settings.qris_image_url || "/payment/QRIS.png"}
+                alt="Preview QRIS"
+                fill
+                className="object-contain p-2"
+              />
+            </div>
+            
+            <div className="space-y-3 flex-1">
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider">Foto Barcode QRIS Pembayaran</label>
+              <p className="text-xs font-semibold text-slate-500 leading-relaxed">
+                Unggah gambar barcode QRIS resmi (JPG/PNG). Gambar ini akan otomatis muncul pada langkah pembayaran pemesanan tiket pengunjung.
+              </p>
+              
+              <div className="flex items-center gap-3 pt-1">
+                <label className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold tracking-wider cursor-pointer shadow-md shadow-slate-900/10">
+                  <Upload size={14} />
+                  {uploading ? "Mengunggah..." : "Unggah QRIS Baru"}
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload("qris_image_url", e)}
+                    disabled={uploading}
+                    className="hidden" 
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Transfer Bank Detail Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nama Bank / Provider</label>
+              <input 
+                type="text" 
+                value={settings.bank_name || ""}
+                onChange={(e) => handleChange("bank_name", e.target.value)}
+                placeholder="e.g. Bank BRI / Mandiri / Dana"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Nomor Rekening / No. E-Wallet</label>
+              <input 
+                type="text" 
+                value={settings.bank_account_number || ""}
+                onChange={(e) => handleChange("bank_account_number", e.target.value)}
+                placeholder="e.g. 1234-01-005678-53-9"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Atas Nama (Pemilik Rekening)</label>
+              <input 
+                type="text" 
+                value={settings.bank_account_holder || ""}
+                onChange={(e) => handleChange("bank_account_holder", e.target.value)}
+                placeholder="e.g. AeroSuoh Tourism Management"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:border-emerald-500 focus:bg-white rounded-xl outline-none text-sm text-slate-800 font-medium transition-all"
               />
             </div>
