@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Quote, Star, Send, CheckCircle } from "lucide-react";
+import { Quote, Star, Send, CheckCircle, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { supabase } from "../lib/supabase";
 
@@ -12,27 +12,31 @@ const fallbackReviews = [
     role: "Fotografer Alam",
     text: "Lanskap Keramikan sangat surealis. Seperti memotret di planet lain! Kabut belerangnya memberikan efek sinematik alami yang luar biasa.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Budi&backgroundColor=059669",
-    rating: 5
+    rating: 5,
+    date: "30 Jul 2026"
   },
   {
     name: "Sarah Wijaya",
     role: "Peneliti Geologi",
     text: "Aksesnya cukup menantang, tapi terbayar lunas saat melihat Danau Asam. Manifestasi geotermalnya sangat aktif dan menakjubkan.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&backgroundColor=0284c7",
-    rating: 5
+    rating: 5,
+    date: "29 Jul 2026"
   },
   {
     name: "Rio Pratama",
     role: "Travel Vlogger",
     text: "Gila sih Suoh! Wajib bawa drone kalau ke sini. Danau Lebarnya luas banget, dan warga lokalnya sangat ramah menyambut tamu.",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rio&backgroundColor=ea580c",
-    rating: 5
+    rating: 5,
+    date: "28 Jul 2026"
   },
 ];
 
 export default function Testimonials() {
   const { t, lang } = useLanguage();
   const [reviews, setReviews] = useState<any[]>([]);
+  const [showAll, setShowAll] = useState(false);
 
   // Form states
   const [name, setName] = useState("");
@@ -40,6 +44,21 @@ export default function Testimonials() {
   const [text, setText] = useState("");
   const [rating, setRating] = useState(5);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "Baru saja";
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString(lang === "ID" ? "id-ID" : "en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      });
+    } catch {
+      return dateStr;
+    }
+  };
 
   const fetchReviews = async () => {
     try {
@@ -55,7 +74,8 @@ export default function Testimonials() {
           role: item.origin,
           text: item.text,
           avatar: item.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${item.name}&backgroundColor=059669`,
-          rating: item.rating
+          rating: item.rating,
+          date: formatDate(item.created_at)
         }));
         setReviews(mapped);
       } else {
@@ -69,7 +89,7 @@ export default function Testimonials() {
 
   useEffect(() => {
     fetchReviews();
-  }, []);
+  }, [lang]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +100,7 @@ export default function Testimonials() {
       const randomSeed = Math.floor(Math.random() * 1000);
       const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}_${randomSeed}&backgroundColor=059669`;
       
+      // Auto-publish directly (approved: true)
       const { error } = await supabase
         .from("testimonials")
         .insert([
@@ -89,7 +110,7 @@ export default function Testimonials() {
             text,
             rating,
             avatar_url: avatarUrl,
-            approved: false
+            approved: true
           }
         ]);
       if (error) throw error;
@@ -100,6 +121,9 @@ export default function Testimonials() {
       setText("");
       setRating(5);
       
+      // Refresh list immediately to show the new review
+      fetchReviews();
+
       // Auto clear success message after 5 seconds
       setTimeout(() => setSubmitStatus("idle"), 5000);
     } catch (err) {
@@ -107,6 +131,8 @@ export default function Testimonials() {
       setSubmitStatus("error");
     }
   };
+
+  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
 
   return (
     <section className="py-24 px-4 bg-slate-50 relative overflow-hidden print:hidden" id="testimonials">
@@ -143,9 +169,9 @@ export default function Testimonials() {
           </motion.p>
         </div>
 
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          {reviews.map((review, index) => (
+        {/* Reviews Grid (Tampilkan 3 Ulasan Terbaru Secara Default) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+          {displayedReviews.map((review, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
@@ -159,10 +185,18 @@ export default function Testimonials() {
               </div>
               
               <div>
-                <div className="flex gap-1 text-amber-400 mb-6">
-                  {Array.from({ length: review.rating || 5 }).map((_, star) => (
-                    <Star key={star} size={18} fill="currentColor" />
-                  ))}
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex gap-1 text-amber-400">
+                    {Array.from({ length: review.rating || 5 }).map((_, star) => (
+                      <Star key={star} size={18} fill="currentColor" />
+                    ))}
+                  </div>
+                  {review.date && (
+                    <span className="flex items-center gap-1 text-[11px] font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">
+                      <Calendar size={12} />
+                      {review.date}
+                    </span>
+                  )}
                 </div>
                 
                 <p className="text-slate-700 leading-relaxed mb-8 relative z-10 italic">
@@ -185,6 +219,23 @@ export default function Testimonials() {
           ))}
         </div>
 
+        {/* Tombol Lihat Semua Ulasan (Jika ulasan > 3) */}
+        {reviews.length > 3 && (
+          <div className="flex justify-center mb-16">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 hover:border-emerald-500 text-slate-700 hover:text-emerald-600 font-bold text-sm rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer"
+            >
+              <span>
+                {showAll 
+                  ? (lang === "ID" ? "Tampilkan Lebih Sedikit" : "Show Less") 
+                  : (lang === "ID" ? `Lihat Semua Ulasan (${reviews.length})` : `View All Reviews (${reviews.length})`)}
+              </span>
+              {showAll ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+          </div>
+        )}
+
         {/* Submit Review Form */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -197,8 +248,8 @@ export default function Testimonials() {
           </h3>
           <p className="text-sm text-slate-500 mb-6 text-center">
             {lang === "ID" 
-              ? "Ulasan Anda membantu kami meningkatkan kualitas layanan wisata Suoh."
-              : "Your review helps us improve the Suoh tourism experience."}
+              ? "Ulasan Anda akan langsung terpublikasi untuk membantu pengunjung lainnya."
+              : "Your review will be published immediately to help other visitors."}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -241,7 +292,7 @@ export default function Testimonials() {
                     key={star}
                     type="button"
                     onClick={() => setRating(star)}
-                    className="text-amber-400 focus:outline-none hover:scale-110 transition-transform"
+                    className="text-amber-400 focus:outline-none hover:scale-110 transition-transform cursor-pointer"
                   >
                     <Star size={24} fill={star <= rating ? "currentColor" : "none"} stroke="currentColor" />
                   </button>
@@ -287,8 +338,8 @@ export default function Testimonials() {
                 <CheckCircle size={16} className="text-emerald-600 shrink-0" />
                 <span>
                   {lang === "ID" 
-                    ? "Ulasan berhasil dikirim! Ulasan akan tampil setelah disetujui admin." 
-                    : "Review submitted successfully! It will appear once approved by admin."}
+                    ? "Ulasan berhasil dikirim dan telah langsung dipublikasikan!" 
+                    : "Review submitted successfully and published live!"}
                 </span>
               </motion.div>
             )}
